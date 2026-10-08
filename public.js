@@ -48,7 +48,7 @@ function render() {
   const heading = el('div','year-heading'), title = el('div','year-title'); title.append(el('h2','',String(year)),el('span','',String(group.length).padStart(2,'0') + ' ' + siteCopy.characterLabel)); heading.append(title); section.append(heading);
   const grid = el('div','grid');
   group.forEach((row,index) => {
-   const card = el('button','card'); applyCardAngle(card,row.id); card.setAttribute('aria-label',row.name+' · '+row.community+' · '+year+'년 상세 보기');
+   const card = el('button','card'); applyCardAngle(card,row.id);applyCardTape(card,row.id); card.setAttribute('aria-label',row.name+' · '+row.community+' · '+year+'년 상세 보기');
    const portrait = el('div','portrait'); portrait.dataset.viewStory = siteCopy.viewStory;
    const image = el('img'); image.src = BUNDLED_PORTRAITS[row.image] || row.image; image.alt = row.name+'의 초상'; image.loading = 'lazy'; portrait.append(image);
    const meta = el('div','card-meta'); meta.append(el('span','card-name',row.name),el('span','card-num',String(index+1).padStart(2,'0')));
@@ -64,9 +64,9 @@ $('#detail [data-close]').onclick = () => $('#detail').close();
 $('#detail').addEventListener('click', event => { if (event.target !== $('#detail')) return; const rect = $('#detail').getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) $('#detail').close(); });
 records = validateRecords(BUNDLED_ARCHIVE); siteCopy = validateCopy(BUNDLED_COPY); render();
 async function refreshPublishedData() {
- const results = await Promise.allSettled([fetch('archive.json',{cache:'no-store'}).then(response => {if(!response.ok) throw Error('Unavailable');return response.json();}).then(validateRecords),fetch('settings.json',{cache:'no-store'}).then(response => {if(!response.ok) throw Error('Unavailable');return response.json();}).then(validateCopy)]);
+ const results = await Promise.allSettled([fetchPublished('archive.json').then(response => {if(!response.ok) throw Error('Unavailable');return response.json();}).then(validateRecords),fetchPublished('settings.json').then(response => {if(!response.ok) throw Error('Unavailable');return response.json();}).then(validateCopy)]);
  if (results[0].status === 'fulfilled') records = results[0].value;
  if (results[1].status === 'fulfilled') siteCopy = results[1].value;
  render();
 }
-refreshPublishedData();
+refreshPublishedData().finally(()=>document.documentElement.classList.remove('copy-loading'));

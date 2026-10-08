@@ -29,15 +29,22 @@ const cursors = {
 for (const file of ['left_ptr.svg', 'hand2.svg', 'xterm.svg']) {
   css = css.replaceAll(`assets/cursors/${file}`, cursorData(`assets/cursors/${file}`));
 }
+const publishedLoader = read('shared/loading.mjs').replaceAll('export async function ', 'async function ');
+const tapes = [
+ {ratio:'530 / 205',width:114},{ratio:'445 / 205',width:104},
+ {ratio:'280 / 365',width:46},{ratio:'280 / 365',width:46},
+ {ratio:'637 / 205',width:126},
+].map((tape,i)=>({...tape,src:`data:image/png;base64,${readFileSync(resolve(root,`assets/tapes/tape-${i+1}.png`)).toString('base64')}`}));
 const galleryLayout = read('shared/gallery.mjs').replaceAll('export function ', 'function ');
 const mediaValidation = read('shared/media.mjs').replaceAll('export function ', 'function ');
-let app = (galleryLayout + '\n' + mediaValidation + '\n' + read('app.js') + '\n' + read('publish.js') + '\n' + read('audio.js') + '\n' + read('spine.js') + '\n' + read('cursor.js'))
+let app = (publishedLoader + '\n' + galleryLayout + '\n' + mediaValidation + '\n' + read('app.js') + '\n' + read('publish.js') + '\n' + read('audio.js') + '\n' + read('spine.js') + '\n' + read('cursor.js'))
   .replaceAll('img.src=r.image;', 'img.src=BUNDLED_PORTRAITS[r.image]||r.image;')
   .replace("$('#detail-image').src=r.image;", "$('#detail-image').src=BUNDLED_PORTRAITS[r.image]||r.image;")
   .replace('async function loadCopy(){', 'async function loadCopy(){publishedCopy=validateCopy(BUNDLED_COPY);')
   .replace('records=samples;demo=true;render()', "records=validate(BUNDLED_ARCHIVE);demo=records.some(r=>r.id.startsWith('sample-'));render()")
-  .replace('Promise.all([loadCopy(),init()]);', "siteCopy=validateCopy(BUNDLED_COPY);records=validate(BUNDLED_ARCHIVE);demo=records.some(r=>r.id.startsWith('sample-'));render();Promise.all([loadCopy(),init()]);");
+  .replace("Promise.all([loadCopy(),init()]).finally", "siteCopy=validateCopy(BUNDLED_COPY);records=validate(BUNDLED_ARCHIVE);demo=records.some(r=>r.id.startsWith('sample-'));render();Promise.all([loadCopy(),init()]).finally");
 app = `const BUNDLED_CURSORS=${encode(cursors)};\nconst BUNDLED_PORTRAITS=${encode(portraits)};\nconst BUNDLED_ARCHIVE=${encode(JSON.parse(read('archive.json')))};\nconst BUNDLED_COPY=${encode(JSON.parse(read('settings.json')))};\n${app}`;
+app = `const BUNDLED_TAPES=${encode(tapes)};\n${app}`;
 app = app.replaceAll('</script', '<\\/script');
 const hash = text => `'sha256-${createHash('sha256').update(text).digest('base64')}'`;
 const favicon = `data:image/svg+xml;base64,${Buffer.from(read('favicon.svg')).toString('base64')}`;
@@ -49,7 +56,8 @@ let publicTemplate = editorTemplate
 const toolbarStart = publicTemplate.indexOf('<div id="copy-toolbar"');
 const cursorStart = publicTemplate.indexOf('<div id="cursor"');
 publicTemplate = publicTemplate.slice(0, toolbarStart) + publicTemplate.slice(cursorStart);
-let reader = `const BUNDLED_CURSORS=${encode(cursors)};\nconst BUNDLED_PORTRAITS=${encode(portraits)};\nconst BUNDLED_ARCHIVE=${encode(JSON.parse(read('archive.json')))};\nconst BUNDLED_COPY=${encode(JSON.parse(read('settings.json')))};\n${galleryLayout}\n${mediaValidation}\n${read('public.js')}\n${read('audio.js')}\n${read('spine.js')}\n${read('cursor.js')}`;
+let reader = `const BUNDLED_CURSORS=${encode(cursors)};\nconst BUNDLED_PORTRAITS=${encode(portraits)};\nconst BUNDLED_ARCHIVE=${encode(JSON.parse(read('archive.json')))};\nconst BUNDLED_COPY=${encode(JSON.parse(read('settings.json')))};\n${publishedLoader}\n${galleryLayout}\n${mediaValidation}\n${read('public.js')}\n${read('audio.js')}\n${read('spine.js')}\n${read('cursor.js')}`;
+reader = `const BUNDLED_TAPES=${encode(tapes)};\n${reader}`;
 reader = reader.replaceAll('</script', '<\\/script');
 function compile(template, script) {
  const csp = `default-src 'self'; script-src 'self' ${hash(script)}; style-src 'self' ${hash(css)}; img-src 'self' data: https:; media-src 'self'; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'`;

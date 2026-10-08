@@ -83,3 +83,10 @@ footer{background:var(--fresh-green);color:var(--dark);border-color:var(--dark)}
 .spine-arrow{display:inline-block;vertical-align:middle;width:1.5em;height:.55em;margin-left:.35em;overflow:visible}.spine-progress{width:3px;background:#A9ED3D44;border-radius:2px}.spine-progress:after{border-radius:2px}
 @media(max-width:700px){.spine-progress{width:2px}}
 @media(pointer:fine){#cursor.mac-cursor{width:48px;height:48px}.mac-cursor img{width:48px;height:48px}}
+
+/* Keep template copy out of the first paint while published/local copy loads. */
+.copy-loading body{visibility:hidden}
+
+/* Preserve the original portrait crop and hover motion. */
+.card-tape{position:absolute;z-index:2;left:50%;top:0;width:var(--tape-width);max-width:48%;background-repeat:no-repeat;background-size:100% 100%;pointer-events:none;transform:translate(calc(-50% + var(--tape-x)),calc(-50% + var(--tape-y))) rotate(var(--tape-angle)) scale(var(--tape-scale));filter:drop-shadow(0 1px 1px #08191033)}
+@media(max-width:700px){.card-tape{width:calc(var(--tape-width)*.8)}}
