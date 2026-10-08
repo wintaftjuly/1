@@ -17,6 +17,8 @@ for (const file of ['cursor-arrow.svg', 'cursor-cross.svg']) {
 }
 const fontFile = 'assets/fonts/PretendardVariable.woff2';
 css = css.replaceAll(fontFile, `data:font/woff2;base64,${readFileSync(resolve(root, fontFile)).toString('base64')}`);
+const spineFont = 'assets/fonts/BastligaOne-Regular.otf';
+css = css.replaceAll(spineFont, `data:font/otf;base64,${readFileSync(resolve(root, spineFont)).toString('base64')}`);
 const cursorData = file => `data:image/svg+xml;base64,${Buffer.from(read(file)).toString('base64')}`;
 const cursors = {
   arrow: cursorData('assets/cursors/left_ptr.svg'),
@@ -62,6 +64,7 @@ function outputDirectory(name, bundle) {
  writeFileSync(resolve(output, 'index.html'), bundle.html); writeFileSync(resolve(output, '_headers'), bundle.headers);
  for (const file of ['archive.json','settings.json','.nojekyll','favicon.svg']) copyFileSync(resolve(root,file),resolve(output,file));
  mkdirSync(resolve(output,'assets/fonts'),{recursive:true}); copyFileSync(resolve(root,'assets/fonts/Pretendard-OFL.txt'),resolve(output,'assets/fonts/Pretendard-OFL.txt'));
+ copyFileSync(resolve(root,'assets/fonts/BastligaOne-SOURCE.txt'),resolve(output,'assets/fonts/BastligaOne-SOURCE.txt'));
  cpSync(resolve(root,'assets/cursors'),resolve(output,'assets/cursors'),{recursive:true});
 }
 const publicBundle = compile(publicTemplate, reader), editorBundle = compile(editorTemplate, app);

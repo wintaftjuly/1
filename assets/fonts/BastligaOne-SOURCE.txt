@@ -1,0 +1,7 @@
+Bastliga One Regular
+Author/copyright from supplied font metadata: Bastliga One © (Madhaline Studio). 2022. All Rights Reserved
+Original file supplied by the site owner: bastliga-one.regular.otf
+Reference: https://www.1001fonts.com/bastliga-one-font.html
+The original font is embedded without modifying the font file.
+The supplied font has no digits, em dash, slash, or infinity glyph; these use Pretendard fallback.
+No license grant is inferred from the font metadata.

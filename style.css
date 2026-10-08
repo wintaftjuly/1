@@ -60,3 +60,7 @@ footer{background:var(--fresh-green);color:var(--dark);border-color:var(--dark)}
 /* Identity and social links: same first line, Postype on the next. */
 .archive-subtitle{font-size:10.8px}.archive-identity{display:flex;align-items:baseline;gap:12px;margin-top:calc(20px + 1em);line-height:1.5}.archive-identity .archive-subtitle[data-copy=subtitle]{display:inline;margin-top:0;font-weight:800}.archive-social{margin-top:0;font-weight:400;text-decoration:underline;text-underline-offset:3px;transition:opacity .18s ease}.archive-social:hover{opacity:.7}.archive-social:focus-visible{outline:2px solid currentColor;outline-offset:5px}
 @media(max-width:700px){.archive-subtitle{font-size:8.4px}.archive-identity{margin-top:calc(15px + 1em)}}
+
+/* User-supplied Bastliga One, restricted to the archive spine. */
+@font-face{font-family:'Bastliga One';font-style:normal;font-weight:400;font-display:swap;src:url('assets/fonts/BastligaOne-Regular.otf') format('opentype')}
+.archive-spine .spine-line,.archive-spine .spine-line *{font-family:'Bastliga One','Pretendard',sans-serif!important;font-weight:400;font-synthesis:none}

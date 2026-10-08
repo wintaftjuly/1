@@ -95,3 +95,5 @@ Pretendard 공식 패키지의 Pretendard Variable WOFF2를 로컬 보관하고 
 현재 색상은 Fallen Angels 레퍼런스의 Lava Red #E42217, Lemon Lime #A9ED3D, Fresh Green #34CD3F, Black Bean #081910을 사용합니다. 레퍼런스 이미지에 표기된 네 HEX 색을 그대로 사용합니다. 빨강 배경/라임 글자의 상단, 라임 배경/빨강 연도, 초록 배경/검정 글자, 검정 배경/초록 연도를 순서대로 배치하며 푸터는 초록 배경/검정 글자입니다. ONE NAN은 이전 THE CHARACTER FILES 문구를 대체하며 위에 한 줄 여백을 두고 Postype 링크보다 굵게 표시합니다. 기존 게시 자료의 이전 문구도 표시할 때 변환하되 다른 사용자 문구는 유지합니다. 제목의 타원과 기울기, 연도 글자의 굵기를 조정했으며 캐릭터 영역의 열 수·사진 크기·간격·padding·hover 전환값은 이전 버전과 데스크톱 및 모바일에서 동일하게 유지했습니다. ARCHIVED WITH AFFECTION / HANDLE WITH CARE와 PERSONAL COLLECTION / EST. IN MEMORIES는 제거했습니다.
 
 왼쪽 CHARACTER ARCHIVE의 `숫자 / ∞`는 현재 표시하는 캐릭터 수를 자동으로 표시합니다. 관리 페이지에서는 임시 작업 자료 수, 공개 페이지에서는 게시된 자료 수입니다. 기존 문구 파일에 포함된 고정 숫자는 표시 전에 제거합니다.
+
+Bastliga One Regular는 사용자가 제공한 원본 OTF를 왼쪽 아카이브 문구에만 적용합니다. 글꼴에 없는 숫자·슬래시·무한대·em dash는 Pretendard로 표시합니다. 다른 영역은 Pretendard를 유지합니다. 폰트는 배포 HTML에 포함하여 외부 글꼴 요청 없이 표시합니다. 출처와 파일 메타데이터는 assets/fonts/BastligaOne-SOURCE.txt에 기록했습니다.
