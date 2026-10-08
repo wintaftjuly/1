@@ -50,3 +50,11 @@ python3 -m http.server 8000 --bind 0.0.0.0 --directory dist
 비공개 저장소도 웹사이트가 전달하는 HTML/CSS/JavaScript·이미지·공개 JSON을 숨기지는 못합니다. 비밀키나 비공개 개인정보를 공개 자료에 넣지 마세요. 취약점의 부재를 보장하지는 않습니다.
 
 현재 디자인은 세로 라벨, 폴더 탭, 초록·적갈색·크림색, 사진 카드와 hover 모션을 복원한 버전입니다. 사이트 이름, 상단 소개와 설명 문장, 샘플 안내 문구만 삭제했습니다.
+
+## 글꼴과 커서
+
+Spoqa 공식 패키지의 Spoqa Han Sans Neo Regular/Medium/Bold WOFF2를 로컬 보관하고 배포 페이지에 포함합니다. 모든 글자는 이 글꼴을 사용합니다. SIL OFL 라이선스는 `assets/fonts/OFL.txt`에 포함합니다.
+
+커서는 `ful1e5/apple_cursor`의 GPL-3.0 macOS 재현 세트를 사용하며 Apple 공식 구형 OS 원본은 아닙니다. 출처·변환 내용·수정 SVG·라이선스는 `assets/cursors/`에 배포합니다. 기본 화살표, 손가락, I빔, 실제 이미지 처리 중의 회전 커서를 구현했습니다. 포인터를 빠르게 좌우로 흔들면 일시 확대됩니다. 마우스를 즉시 따라가며 터치 화면에는 표시하지 않습니다. 동작 감소 설정에서는 회전과 확대를 생략합니다.
+
+지정된 MEMORIES.psd 장식, 별 아이콘, 스크롤 안내, 파일·컬렉션 라벨, PRIVATE COLLECTION 및 기존 푸터 문장은 제거했습니다. 푸터에는 `@ererwintaft`만 표시합니다. 사진 카드와 hover 모션, 연도 묶음은 유지합니다.

@@ -4,15 +4,10 @@
   "titleAccent": "기록.",
   "subtitle": "THE CHARACTER FILES",
   "spine": "CHARACTER ARCHIVE — 01 / ∞",
-  "spineFoot": "PRIVATE COLLECTION",
-  "fileLabel": "FILE",
-  "collectionLabel": "PERSONAL COLLECTION",
-  "yearSpine": "YEAR FILE / PERSONAL ARCHIVE",
   "yearCaption": "ARCHIVED WITH AFFECTION / HANDLE WITH CARE",
-  "footer": "남겨진 이야기들의 전당",
-  "footerEnglish": "EVERY CHARACTER HAS A SEASON.",
   "characterLabel": "CHARACTERS",
   "seasonLabel": "SEASONS",
   "viewStory": "VIEW STORY ↗",
-  "managerTitle": "이야기를 모으는 곳."
+  "managerTitle": "이야기를 모으는 곳.",
+  "footerHandle": "@ererwintaft"
 }

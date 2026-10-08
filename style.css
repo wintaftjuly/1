@@ -15,3 +15,16 @@ body{background-color:var(--jade);background-image:none}header,.intro{color:var(
 
 /* Remove the requested text areas without changing the gallery design. */
 header{justify-content:flex-end}.header-actions{margin-left:auto}.intro-bottom{justify-content:flex-end}.intro-bottom>span:last-child{margin-left:auto}
+
+/* Requested font, text-only removals and macOS cursor states. */
+@font-face{font-family:'Spoqa Han Sans Neo';font-style:normal;font-weight:400;font-display:swap;src:url('assets/fonts/SpoqaHanSansNeo-Regular.woff2') format('woff2')}
+@font-face{font-family:'Spoqa Han Sans Neo';font-style:normal;font-weight:500;font-display:swap;src:url('assets/fonts/SpoqaHanSansNeo-Medium.woff2') format('woff2')}
+@font-face{font-family:'Spoqa Han Sans Neo';font-style:normal;font-weight:600 900;font-display:swap;src:url('assets/fonts/SpoqaHanSansNeo-Bold.woff2') format('woff2')}
+*,*::before,*::after{font-family:'Spoqa Han Sans Neo',sans-serif!important}
+.intro h1:after,.copy-editing .intro h1:after{content:none!important;display:none!important}
+.archive-spine>span:first-child{font-size:22px;font-weight:700}.archive-spine>span:last-child{font-size:22px;font-weight:700;letter-spacing:1px}
+footer{background:var(--jade)}footer [data-copy=footerHandle]{display:block!important;font-size:12px!important;letter-spacing:0}
+.intro-bottom{justify-content:flex-end}.intro-bottom>span:last-child{margin-left:auto}
+@media(pointer:fine){body{cursor:url('assets/cursors/left_ptr.svg') 10 5,default}button,a,.button{cursor:url('assets/cursors/hand2.svg') 11 7,pointer}input,textarea,[contenteditable=plaintext-only]{cursor:url('assets/cursors/xterm.svg') 16 17,text}.mac-cursor-active,.mac-cursor-active *{cursor:none!important}#cursor.mac-cursor{display:block!important;position:fixed;left:0;top:0;width:32px;height:32px;border:0;border-radius:0;pointer-events:none;z-index:2147483647;transition:none;visibility:hidden;will-change:transform}.mac-cursor img{width:32px;height:32px;display:block;transform-origin:var(--hot-x,10px) var(--hot-y,5px)}.mac-cursor.shaken img{transform:scale(2);transition:transform .1s}}
+@media(max-width:700px){.archive-spine>span:first-child,.archive-spine>span:last-child{font-size:12px}footer [data-copy=footerHandle]{font-size:11px!important}}
+@media(pointer:coarse){#cursor.mac-cursor{display:none!important}}
