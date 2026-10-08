@@ -1,23 +1,8 @@
 {
-  "brand": "여운",
-  "brandMark": "餘韻",
-  "headerEnglish": "A PERSONAL CHARACTER ARCHIVE",
-  "headerKorean": "함께 머물렀던 얼굴들",
-  "introLabel": "PERSONAL COLLECTION / EST. IN MEMORIES",
   "titleLead": "얼굴의",
   "titleAccent": "기록.",
-  "subtitle": "THE CHARACTER FILES",
-  "description": "함께 머물렀던 이름들.\n한 해씩, 한 장씩 꺼내 보는 기록.",
-  "spine": "CHARACTER ARCHIVE — 01 / ∞",
-  "spineFoot": "PRIVATE COLLECTION",
-  "fileLabel": "FILE",
-  "collectionLabel": "PERSONAL COLLECTION",
-  "yearSpine": "YEAR FILE / PERSONAL ARCHIVE",
-  "yearCaption": "ARCHIVED WITH AFFECTION / HANDLE WITH CARE",
-  "footer": "여운 — 남겨진 이야기들의 전당",
-  "footerEnglish": "EVERY CHARACTER HAS A SEASON.",
-  "characterLabel": "CHARACTERS",
-  "seasonLabel": "SEASONS",
+  "characterLabel": "캐릭터",
+  "seasonLabel": "연도",
   "viewStory": "VIEW STORY ↗",
-  "managerTitle": "이야기를 모으는 곳."
+  "managerTitle": "캐릭터 관리"
 }
