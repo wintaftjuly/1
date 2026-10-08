@@ -70,14 +70,15 @@ footer{background:var(--fresh-green);color:var(--dark);border-color:var(--dark)}
 .intro-bottom{flex-direction:column;align-items:flex-end;gap:8px}.intro-bottom #total{max-width:none}.bgm-player{display:flex;align-items:center;gap:7px;font-size:10px;font-weight:600;color:var(--poster-lime);letter-spacing:.03em}.bgm-player button{display:inline-flex;align-items:center;justify-content:center;background:transparent;color:inherit;border:0;padding:4px;font-size:inherit;line-height:1;min-width:0}.bgm-player button:hover{background:transparent;color:inherit;opacity:.7}.bgm-player button:focus-visible{outline:1px solid currentColor;outline-offset:2px}.bgm-player svg{width:1em;height:1em;fill:currentColor}.bgm-player #bgm-time{padding:0;font:inherit;font-variant-numeric:tabular-nums;white-space:nowrap}.bgm-player button[aria-pressed=true]{opacity:.5}
 @media(max-width:700px){.bgm-player{font-size:8px}.card-alt-name{font-size:10px}}
 
-/* Full-height lettering inside the unchanged 66px / 30px spine. */
+/* Quiet editorial rail: preserve the font proportions and track reading progress. */
 .archive-identity .archive-subtitle[data-copy=subtitle]{font-size:21.6px}
-.archive-spine{overflow:hidden}.archive-spine>span.spine-line{position:absolute;left:50%;top:50%;display:block;width:max-content;max-width:none;writing-mode:horizontal-tb;white-space:nowrap;font-size:66px;line-height:1;letter-spacing:0;transform:translate(-50%,-50%) rotate(90deg) scale(var(--spine-stretch,1),var(--spine-cross,.88));transform-origin:center}
-.spine-line [data-copy=spine]{display:inline-block;white-space:pre}.spine-letter{display:inline-block;transform-origin:center;will-change:auto}.spine-letter.spine-space{white-space:pre}
-@media(max-width:700px){.archive-identity .archive-subtitle[data-copy=subtitle]{font-size:16.8px}.archive-spine>span.spine-line{font-size:36px}}
-@media(prefers-reduced-motion:reduce){.spine-letter{transform:none!important}}
+.archive-spine{overflow:hidden}.archive-spine>span.spine-line{position:absolute;left:50%;top:50%;display:block;width:max-content;max-width:none;writing-mode:horizontal-tb;white-space:nowrap;font-size:40px;line-height:1.15;letter-spacing:0;transform:translate(-50%,calc(-50% + var(--spine-drift,0px))) rotate(90deg) scale(var(--spine-fit,1));transform-origin:center}
+.spine-line [data-copy=spine]{display:inline-block;white-space:pre}
+.spine-progress{position:absolute;left:5px;top:24px;bottom:24px;width:1px;background:#A9ED3D26;pointer-events:none}.spine-progress:after{content:'';position:absolute;inset:0;background:var(--poster-lime);transform:scaleY(var(--reading-progress,0));transform-origin:top}
+.card-alt-name{font-size:13px;line-height:1.5;letter-spacing:.04em;margin-top:4px;opacity:.85}.card-alt-name+.card-community{margin-top:6px}
+@media(max-width:700px){.archive-identity .archive-subtitle[data-copy=subtitle]{font-size:16.8px}.archive-spine>span.spine-line{font-size:18px}.spine-progress{left:3px}.card-alt-name{font-size:11px}}
 </style></head>
-<body><aside class="archive-spine"><span class="spine-line"><span data-copy="spine">Character archive</span></span></aside><header></header>
+<body><aside class="archive-spine"><span class="spine-line"><span data-copy="spine">Character archive</span></span><span class="spine-progress" aria-hidden="true"></span></aside><header></header>
 <main id="top"><section class="intro"><h1><span data-copy="titleLead">얼굴의</span> <em data-copy="titleAccent">기록.</em><span class="archive-identity archive-subtitle"><span class="archive-subtitle" data-copy="subtitle">ONE NAN</span><a class="archive-social archive-subtitle" href="https://x.com/ErerWintaft" target="_blank" rel="noopener noreferrer" aria-label="ererwintaft의 X 새 창으로 열기">@ererwintaft</a></span><a class="archive-subtitle archive-postype" href="https://www.postype.com/@ererwintaft" target="_blank" rel="noopener noreferrer" aria-label="ererwintaft의 Postype 새 창으로 열기">POSTYPE · @ererwintaft ↗</a></h1><div class="intro-bottom"><div class="bgm-player" role="group" aria-label="배경 음악"><button id="bgm-stop" type="button" aria-label="완전 멈춤" title="완전 멈춤"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="2" width="8" height="8"/></svg></button><button id="bgm-pause" type="button" aria-label="일시 정지" title="일시 정지"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 2h3v8H2zM7 2h3v8H7z"/></svg></button><button id="bgm-play" type="button" aria-label="재생" title="재생"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1l8 5-8 5z"/></svg></button><span id="bgm-time" aria-label="음악 재생 시간">00:00 / --:--</span></div><audio id="bgm" src="assets/audio/bgm.mp3" autoplay loop preload="metadata"></audio><span id="total"></span></div></section><nav id="years" aria-label="활동 연도"></nav><div id="archive"></div><footer><span data-copy="footerHandle">@ererwintaft</span></footer></main>
 <dialog id="detail"><button class="close" data-close aria-label="닫기">×</button><img id="detail-image" alt=""><div class="detail-copy"><span id="detail-year" class="eyebrow"></span><h2 id="detail-name"></h2><p id="detail-alt-name" hidden></p><p id="detail-community"></p><p id="detail-note"></p></div></dialog>
 
@@ -181,36 +182,23 @@ function unlockMusic(event){if(awaitingMusicGesture&&!event.target.closest('.bgm
 document.addEventListener('pointerdown',unlockMusic);document.addEventListener('keydown',unlockMusic);
 updateMusic();playMusic();
 
-// One readable label: fit to the fixed rail, with a restrained scroll cascade.
+// Whole-word typography with intact proportions and meaningful reading progress.
 (()=>{
- const rail=document.querySelector('.archive-spine'),line=rail.querySelector('.spine-line'),label=line.querySelector('[data-copy=spine]');
- const reduced=matchMedia('(prefers-reduced-motion:reduce)');
- let rendered=null,letters=[],animations=[],lastScroll=scrollY,distance=0,lastWave=-Infinity,frame=null;
- function cancelWave(){animations.forEach(a=>a.cancel());animations=[]}
- function fit(){frame=null;const length=Math.max(1,line.offsetWidth),thickness=Math.max(1,line.offsetHeight);line.style.setProperty('--spine-stretch',Math.max(1,rail.clientHeight-48)/length);line.style.setProperty('--spine-cross',Math.max(1,rail.clientWidth-8)/thickness)}
- function requestFit(){if(frame===null)frame=requestAnimationFrame(fit)}
- function sync(){
-  const text=label.textContent||'',editing=label.isContentEditable;
-  if(editing){cancelWave();rendered=null;letters=[];line.removeAttribute('role');line.removeAttribute('aria-label');label.removeAttribute('aria-hidden');if(label.children.length)label.textContent=text;requestFit();return}
-  if(text===rendered&&letters.length===Array.from(text).length&&letters.every(letter=>letter.parentNode===label))return;
-  cancelWave();rendered=text;line.setAttribute('role','img');line.setAttribute('aria-label',text);label.setAttribute('aria-hidden','true');
-  letters=Array.from(text).map(char=>{const span=document.createElement('span');span.className='spine-letter'+(char===' '?' spine-space':'');span.textContent=char;return span});
-  label.replaceChildren(...letters);requestFit();
+ const rail=document.querySelector('.archive-spine'),line=rail.querySelector('.spine-line'),label=line.querySelector('[data-copy=spine]'),reduced=matchMedia('(prefers-reduced-motion:reduce)');
+ let frame=null;
+ function update(){
+  frame=null;const availableLength=Math.max(1,rail.clientHeight-80),availableThickness=Math.max(1,rail.clientWidth-8);
+  const fit=Math.min(1,availableLength/Math.max(1,line.offsetWidth),availableThickness/Math.max(1,line.offsetHeight));
+  line.style.setProperty('--spine-fit',String(fit));
+  const range=Math.max(0,document.documentElement.scrollHeight-innerHeight),progress=range?Math.min(1,Math.max(0,scrollY/range)):0;
+  rail.style.setProperty('--reading-progress',String(progress));
+  line.style.setProperty('--spine-drift',reduced.matches||label.isContentEditable?'0px':`${(progress-.5)*12}px`);
  }
- new MutationObserver(sync).observe(label,{childList:true,subtree:true,characterData:true});
- window.addEventListener('resize',requestFit,{passive:true});document.fonts.ready.then(requestFit);document.fonts.addEventListener('loadingdone',requestFit);
- window.addEventListener('scroll',()=>{
-  const delta=scrollY-lastScroll;lastScroll=scrollY;if(reduced.matches||label.isContentEditable||!letters.length)return;
-  distance+=Math.abs(delta);const now=performance.now();if(distance<70||now-lastWave<750)return;distance=0;lastWave=now;cancelWave();
-  const direction=delta>=0?1:-1;
-  animations=letters.map((letter,index)=>letter.animate([
-   {transform:'translateX(0) rotate(0deg)'},
-   {transform:`translateX(${direction*(4+(index%3))}px) rotate(${index%2?3:-3}deg)`,offset:.38},
-   {transform:`translateX(${-direction*1.5}px) rotate(0deg)`,offset:.72},
-   {transform:'translateX(0) rotate(0deg)'}
-  ],{duration:440,delay:index*8,easing:'cubic-bezier(.22,.7,.25,1)'}));
- },{passive:true});
- reduced.addEventListener('change',()=>{if(reduced.matches)cancelWave()});sync();
+ function requestUpdate(){if(frame===null)frame=requestAnimationFrame(update)}
+ new MutationObserver(requestUpdate).observe(label,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['contenteditable']});
+ new ResizeObserver(requestUpdate).observe(document.querySelector('main'));
+ window.addEventListener('scroll',requestUpdate,{passive:true});window.addEventListener('resize',requestUpdate,{passive:true});reduced.addEventListener('change',requestUpdate);
+ document.fonts.ready.then(requestUpdate);document.fonts.addEventListener('loadingdone',requestUpdate);requestUpdate();
 })();
 
 // Open-source macOS cursor assets; immediate tracking without a trailing effect.
