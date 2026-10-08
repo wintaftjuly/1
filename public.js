@@ -52,7 +52,7 @@ function render() {
    const portrait = el('div','portrait'); portrait.dataset.viewStory = siteCopy.viewStory;
    const image = el('img'); image.src = BUNDLED_PORTRAITS[row.image] || row.image; image.alt = row.name+'의 초상'; image.loading = 'lazy'; portrait.append(image);
    const meta = el('div','card-meta'); meta.append(el('span','card-name',row.name),el('span','card-num',String(index+1).padStart(2,'0')));
-   card.append(portrait,meta); if (row.altName) card.append(el('div','card-alt-name',row.altName)); card.append(el('div','card-community',row.community)); card.onclick = () => showDetail(row.id); grid.append(card);
+   card.append(portrait,meta); card.append(el('div','card-community',row.community)); card.onclick = () => showDetail(row.id); grid.append(card);
   });
   section.append(grid); const caption = el('div','year-caption'); caption.append(el('span','',''),el('span','',String(year))); section.append(caption); archive.append(section);
  });

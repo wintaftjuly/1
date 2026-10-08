@@ -19,6 +19,7 @@ const fontFile = 'assets/fonts/PretendardVariable.woff2';
 css = css.replaceAll(fontFile, `data:font/woff2;base64,${readFileSync(resolve(root, fontFile)).toString('base64')}`);
 const spineFont = 'assets/fonts/Transcity-Regular.otf';
 css = css.replaceAll(spineFont, `data:font/otf;base64,${readFileSync(resolve(root, spineFont)).toString('base64')}`);
+for (const file of ['assets/fonts/NotoSerifTC-Black.woff2','assets/fonts/NotoSerifKR-Black.woff2']) css = css.replaceAll(file, `data:font/woff2;base64,${readFileSync(resolve(root,file)).toString('base64')}`);
 const cursorData = file => `data:image/svg+xml;base64,${Buffer.from(read(file)).toString('base64')}`;
 const cursors = {
   arrow: cursorData('assets/cursors/left_ptr.svg'),
@@ -66,7 +67,7 @@ function outputDirectory(name, bundle) {
  for (const file of ['archive.json','settings.json','.nojekyll','favicon.svg']) copyFileSync(resolve(root,file),resolve(output,file));
  mkdirSync(resolve(output,'assets/fonts'),{recursive:true}); copyFileSync(resolve(root,'assets/fonts/Pretendard-OFL.txt'),resolve(output,'assets/fonts/Pretendard-OFL.txt'));
  copyFileSync(resolve(root,'assets/fonts/Transcity-SOURCE.txt'),resolve(output,'assets/fonts/Transcity-SOURCE.txt'));
- for (const file of ['NotoSerifTC-OFL.txt','Favicon-SOURCE.txt']) copyFileSync(resolve(root,'assets/fonts/'+file),resolve(output,'assets/fonts/'+file));
+ for (const file of ['NotoSerifTC-OFL.txt','NotoSerifKR-OFL.txt','TitleFont-SOURCE.txt','Favicon-SOURCE.txt']) copyFileSync(resolve(root,'assets/fonts/'+file),resolve(output,'assets/fonts/'+file));
  cpSync(resolve(root,'assets/audio'),resolve(output,'assets/audio'),{recursive:true});
  cpSync(resolve(root,'assets/cursors'),resolve(output,'assets/cursors'),{recursive:true});
 }
