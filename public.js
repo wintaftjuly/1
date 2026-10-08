@@ -48,7 +48,7 @@ function render() {
   const heading = el('div','year-heading'), title = el('div','year-title'); title.append(el('h2','',String(year)),el('span','',String(group.length).padStart(2,'0') + ' ' + siteCopy.characterLabel)); heading.append(title); section.append(heading);
   const grid = el('div','grid');
   group.forEach((row,index) => {
-   const card = el('button','card'); card.setAttribute('aria-label',row.name+' · '+row.community+' · '+year+'년 상세 보기');
+   const card = el('button','card'); applyCardAngle(card,row.id); card.setAttribute('aria-label',row.name+' · '+row.community+' · '+year+'년 상세 보기');
    const portrait = el('div','portrait'); portrait.dataset.viewStory = siteCopy.viewStory;
    const image = el('img'); image.src = BUNDLED_PORTRAITS[row.image] || row.image; image.alt = row.name+'의 초상'; image.loading = 'lazy'; portrait.append(image);
    const meta = el('div','card-meta'); meta.append(el('span','card-name',row.name),el('span','card-num',String(index+1).padStart(2,'0')));
