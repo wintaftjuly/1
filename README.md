@@ -48,7 +48,7 @@ Cloudflare Storage & Databases → KV에서 `character-archive` Namespace를 하
 1. 별도 Worker `autumn-glitter-ba0e-admin`을 생성합니다.
 2. 해당 Worker의 Access에서 Protect this Worker behind Access → All traffic을 선택하고 **본인 이메일만** 허용합니다. 모든 도메인·경로·미리보기까지 보호합니다. Zero Trust 무료 플랜을 사용할 수 있습니다.
 3. Access 애플리케이션에서 Application Audience (AUD)를 확인합니다. Zero Trust 팀 도메인(`팀이름.cloudflareaccess.com`)도 확인합니다.
-4. 관리 Worker의 Settings → Variables and Secrets에 `ACCESS_TEAM_DOMAIN`과 `ACCESS_AUD`를 설정합니다. 둘은 인증 비밀번호가 아닌 애플리케이션 식별값입니다. 개인 이메일은 코드에 넣지 않고 Access 정책에서 지정합니다.
+4. 현재 관리용 wrangler.admin.jsonc에는 사용자가 제공한 팀 도메인과 Application Audience를 설정했습니다. Access 애플리케이션을 다시 만들면 이 설정도 갱신해야 합니다. 둘은 인증 비밀번호가 아닌 애플리케이션 식별값입니다. 개인 이메일은 코드에 넣지 않고 Access 정책에서 지정합니다.
 5. 같은 저장소를 연결하고 Build command `node scripts/build.mjs`, Deploy command `npx wrangler deploy --config wrangler.admin.jsonc`로 배포합니다. 설정의 keep_vars는 대시보드 인증 변수를 유지합니다.
 6. 로그인 후 관리 페이지를 엽니다. 비로그인 창에서는 로그인 화면으로 이동하거나 접근이 차단되는지 확인합니다.
 

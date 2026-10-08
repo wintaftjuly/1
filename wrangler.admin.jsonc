@@ -8,7 +8,9 @@
   },
   "main": "worker/index.mjs",
   "vars": {
-    "ADMIN_MODE": "true"
+    "ADMIN_MODE": "true",
+    "ACCESS_TEAM_DOMAIN": "tight-credit-fe5e.cloudflareaccess.com",
+    "ACCESS_AUD": "e7217fae4bd8c6a3cdad2327a1f89d00d804cab597b27aa8042e58adf54bc9d5"
   },
   "keep_vars": true,
   "kv_namespaces": [
