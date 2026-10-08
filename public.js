@@ -22,11 +22,13 @@ function validateCopy(data) {
   next[key] = value;
  }
  if (/^VIEW STORY/i.test(next.viewStory)) next.viewStory = '더보기';
+ next.spine = next.spine.replace(/\s*[—–-]\s*\d+\s*\/\s*∞\s*$/, '');
  if (next.subtitle.trim() === 'THE CHARACTER FILES') next.subtitle = 'ONE NAN';
  return next;
 }
 function applyCopy() {
  document.querySelectorAll('[data-copy]').forEach(node => { if (node.dataset.copy in siteCopy) node.textContent = siteCopy[node.dataset.copy]; });
+ $('#spine-count').textContent = ' — ' + String(records.length).padStart(2,'0') + ' / ∞';
  document.title = [siteCopy.titleLead, siteCopy.titleAccent].filter(Boolean).join(' ') || 'Character Archive';
 }
 function showDetail(id) {
