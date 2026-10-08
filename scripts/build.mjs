@@ -19,7 +19,7 @@ let app = read('app.js')
   .replaceAll('img.src=r.image;', 'img.src=BUNDLED_PORTRAITS[r.image]||r.image;')
   .replace("$('#detail-image').src=r.image;", "$('#detail-image').src=BUNDLED_PORTRAITS[r.image]||r.image;")
   .replace('async function loadCopy(){', 'async function loadCopy(){publishedCopy=validateCopy(BUNDLED_COPY);')
-  .replace('records=[];demo=false;render()', 'records=validate(BUNDLED_ARCHIVE);demo=false;render()')
+  .replace('records=samples;demo=true;render()', "records=validate(BUNDLED_ARCHIVE);demo=records.some(r=>r.id.startsWith('sample-'));render()")
   .replace('Promise.all([loadCopy(),init()]);', "siteCopy=validateCopy(BUNDLED_COPY);records=validate(BUNDLED_ARCHIVE);demo=records.some(r=>r.id.startsWith('sample-'));render();Promise.all([loadCopy(),init()]);");
 app = `const BUNDLED_PORTRAITS=${encode(portraits)};\nconst BUNDLED_ARCHIVE=${encode(JSON.parse(read('archive.json')))};\nconst BUNDLED_COPY=${encode(JSON.parse(read('settings.json')))};\n${app}`;
 app = app.replaceAll('</script', '<\\/script');
