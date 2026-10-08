@@ -1,0 +1,25 @@
+Demo only. Photos are online photo samples from https://github.com/serengil/deepface/tree/31cf970204d5912da90a62e0a9150f0f55547905/tests/unit/dataset
+Names, communities and notes are fictional demonstration data. Names are not intended to identify the photographed people. Photo copyrights remain with their respective owners. No new license is asserted.
+
+portrait-1.jpg: https://raw.githubusercontent.com/serengil/deepface/31cf970204d5912da90a62e0a9150f0f55547905/tests/unit/dataset/img1.jpg
+portrait-2.jpg: https://raw.githubusercontent.com/serengil/deepface/31cf970204d5912da90a62e0a9150f0f55547905/tests/unit/dataset/img3.jpg
+portrait-3.jpg: https://raw.githubusercontent.com/serengil/deepface/31cf970204d5912da90a62e0a9150f0f55547905/tests/unit/dataset/img8.jpg
+portrait-4.jpg: https://raw.githubusercontent.com/serengil/deepface/31cf970204d5912da90a62e0a9150f0f55547905/tests/unit/dataset/img13.jpg
+portrait-5.jpg: https://raw.githubusercontent.com/serengil/deepface/31cf970204d5912da90a62e0a9150f0f55547905/tests/unit/dataset/img16.jpg
+portrait-6.jpg: https://raw.githubusercontent.com/serengil/deepface/31cf970204d5912da90a62e0a9150f0f55547905/tests/unit/dataset/img18.jpg
+portrait-7.jpg: https://raw.githubusercontent.com/serengil/deepface/31cf970204d5912da90a62e0a9150f0f55547905/tests/unit/dataset/img20.jpg
+portrait-8.jpg: https://raw.githubusercontent.com/serengil/deepface/31cf970204d5912da90a62e0a9150f0f55547905/tests/unit/dataset/img22.jpg
+portrait-9.jpg: https://raw.githubusercontent.com/serengil/deepface/31cf970204d5912da90a62e0a9150f0f55547905/tests/unit/dataset/img24.jpg
+portrait-10.jpg: https://raw.githubusercontent.com/serengil/deepface/31cf970204d5912da90a62e0a9150f0f55547905/tests/unit/dataset/img26.jpg
+portrait-11.jpg: https://raw.githubusercontent.com/serengil/deepface/31cf970204d5912da90a62e0a9150f0f55547905/tests/unit/dataset/img29.jpg
+portrait-12.jpg: https://raw.githubusercontent.com/serengil/deepface/31cf970204d5912da90a62e0a9150f0f55547905/tests/unit/dataset/img34.jpg
+portrait-13.jpg: https://raw.githubusercontent.com/serengil/deepface/31cf970204d5912da90a62e0a9150f0f55547905/tests/unit/dataset/img38.jpg
+portrait-14.jpg: https://raw.githubusercontent.com/serengil/deepface/31cf970204d5912da90a62e0a9150f0f55547905/tests/unit/dataset/img43.jpg
+portrait-15.jpg: https://raw.githubusercontent.com/serengil/deepface/31cf970204d5912da90a62e0a9150f0f55547905/tests/unit/dataset/img46.jpg
+portrait-16.jpg: https://raw.githubusercontent.com/serengil/deepface/31cf970204d5912da90a62e0a9150f0f55547905/tests/unit/dataset/img51.jpg
+portrait-17.jpg: https://raw.githubusercontent.com/serengil/deepface/31cf970204d5912da90a62e0a9150f0f55547905/tests/unit/dataset/img53.jpg
+portrait-18.jpg: https://raw.githubusercontent.com/serengil/deepface/31cf970204d5912da90a62e0a9150f0f55547905/tests/unit/dataset/img33.jpg
+portrait-19.jpg: https://raw.githubusercontent.com/serengil/deepface/31cf970204d5912da90a62e0a9150f0f55547905/tests/unit/dataset/img25.jpg
+portrait-20.jpg: https://raw.githubusercontent.com/serengil/deepface/31cf970204d5912da90a62e0a9150f0f55547905/tests/unit/dataset/img7.jpg
+portrait-21.jpg: https://raw.githubusercontent.com/serengil/deepface/31cf970204d5912da90a62e0a9150f0f55547905/tests/unit/dataset/img61.jpg
+portrait-22.jpg: https://raw.githubusercontent.com/serengil/deepface/31cf970204d5912da90a62e0a9150f0f55547905/tests/unit/dataset/img39.jpg

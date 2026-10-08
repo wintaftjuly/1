@@ -1,0 +1,5 @@
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-JL/1ffD6ME89j3jsv6YYwrT8tfhKNl8j/BstvFmkOvA='; style-src 'self' 'sha256-5m1K8cie6G/XBgWQWFj/KbG6/uLjvknDQfsZph6jleA='; img-src 'self' data: https:; media-src 'self'; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), microphone=(), geolocation=()

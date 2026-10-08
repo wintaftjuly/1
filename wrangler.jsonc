@@ -1,0 +1,9 @@
+{
+  "name": "one-nan-public",
+  "compatibility_date": "2026-10-08",
+  "workers_dev": true,
+  "assets": {
+    "directory": "./public-site",
+    "not_found_handling": "single-page-application"
+  }
+}
