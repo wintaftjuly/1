@@ -1,0 +1,7 @@
+{
+  "name": "autumn-glitter-ba0e-admin",
+  "compatibility_date": "2026-10-08",
+  "assets": {
+    "directory": "./dist-admin"
+  }
+}

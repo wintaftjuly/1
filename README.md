@@ -30,18 +30,27 @@ python3 -m http.server 8000 --bind 0.0.0.0 --directory dist
 
 `.github/workflows/pages.yml`은 main 변경 또는 수동 실행 시 독립 실행 페이지를 빌드하고 `dist/`를 배포합니다. 저장소 Pages 설정의 Source는 GitHub Actions를 사용합니다. 공개 주소는 `https://wintaftjuly.github.io/1/`입니다. 업데이트 확인은 Actions에서 가장 최근 실행의 성공 상태를 확인한 뒤 수행합니다.
 
-## Cloudflare로 이전하고 저장소 비공개로 전환
+## Cloudflare Workers: 공개용과 편집용 분리
 
-아직 이전 또는 비공개 전환은 수행하지 않았습니다. 새 호스팅에서 정상 동작을 확인하기 전에 기존 Pages를 중단하지 마세요.
+공개 Worker: `autumn-glitter-ba0e`, 주소 `https://autumn-glitter-ba0e.julyandwinter.workers.dev/`.
 
-1. `https://dash.cloudflare.com/sign-up`에서 무료 계정을 만듭니다.
-2. Workers & Pages에서 Pages 프로젝트를 만들고 GitHub 저장소 `wintaftjuly/1`을 연결합니다.
-3. 운영 브랜치 `main`, 프레임워크 None, 빌드 명령 `node scripts/build.mjs`, 출력 `dist`를 지정합니다. 루트 디렉터리는 비워 둡니다.
-4. 생성된 pages.dev 주소에서 실제 동작을 확인합니다. 도메인 구매는 필요 없습니다.
-5. 새 주소가 정상 동작하면 GitHub Settings → General → Danger Zone에서 저장소를 비공개로 바꿉니다. 기존 GitHub Pages 주소는 플랜에 따라 사용할 수 없게 될 수 있습니다.
-6. Cloudflare GitHub 앱이 비공개 저장소에 접근할 수 있는지 확인하고 새 배포를 검증합니다.
+Cloudflare Workers & Pages → 해당 Worker → Settings → Builds에서 연결 저장소와 main 브랜치를 확인하고 아래 명령을 저장합니다.
 
-도메인 변경 시 브라우저 저장 자료는 자동 이동하지 않습니다. 이전 사이트에서 캐릭터·문구 파일을 각각 내보내 새 사이트로 가져오세요. 무료 호스팅에도 요금제 한도가 있습니다.
+- Build command: `node scripts/build.mjs`
+- Deploy command: `npx wrangler deploy`
+- Root directory: 저장소 루트 (비움)
+
+`wrangler.jsonc`는 `dist/`만 공개합니다. 공개 페이지에는 관리·문구 편집 코드가 없으며 localStorage의 개인 수정도 읽지 않습니다. GitHub Pages도 같은 공개용 산출물을 사용합니다.
+
+편집용은 별도 Worker `autumn-glitter-ba0e-admin`을 생성합니다. **편집용 파일을 배포하기 전에** 해당 Worker → Access → Protect this Worker behind Access → All traffic에서 본인 이메일만 허용하는 인증 정책을 설정합니다. Zero Trust 활성화가 필요할 수 있습니다. Worker 전체에 적용해 workers.dev·추가 도메인·미리보기 URL까지 보호합니다. 링크를 분리하는 것만으로는 인증이 되지 않습니다.
+
+보호를 설정한 편집용 Worker에 같은 저장소를 연결하고 Build command는 동일하게, Deploy command는 `npx wrangler deploy --config wrangler.admin.jsonc`로 지정합니다. 편집용 산출물은 `dist-admin/`입니다. 별도 브라우저에서 비로그인 접근이 차단되는지 확인한 뒤 사용합니다.
+
+편집은 해당 브라우저에 저장됩니다. 모든 방문자에게 반영하려면 편집용에서 내보낸 `archive.json`과 `settings.json`을 저장소에 업데이트합니다. 서버에 직접 저장하거나 자동 게시하는 기능은 현재 없습니다. 다른 주소로 옮기기 전에 기존 편집 자료를 내보내 백업하세요.
+
+새 공개 Worker에서 정상 표시를 확인한 뒤 GitHub Settings → General → Danger Zone → Change visibility에서 저장소를 Private으로 전환하세요. Cloudflare GitHub 연결에 이 비공개 저장소 접근 권한이 있어야 합니다. 기존 무료 GitHub Pages는 중단될 수 있습니다. Workers 배포·Access·저장소 비공개 전환은 계정 대시보드에서 별도로 수행해야 합니다.
+
+웹사이트 주소에는 GitHub 계정·저장소 경로가 포함되지 않습니다. 원본 저장소는 비공개로 보호할 수 있지만 브라우저에 전달하는 HTML/CSS/JavaScript와 이미지는 열람 가능합니다. 무료 플랜도 사용량 한도가 있습니다.
 
 ## 보안
 
@@ -49,7 +58,7 @@ python3 -m http.server 8000 --bind 0.0.0.0 --directory dist
 
 비공개 저장소도 웹사이트가 전달하는 HTML/CSS/JavaScript·이미지·공개 JSON을 숨기지는 못합니다. 비밀키나 비공개 개인정보를 공개 자료에 넣지 마세요. 취약점의 부재를 보장하지는 않습니다.
 
-현재 디자인은 세로 라벨, 폴더 탭, 초록·적갈색·크림색, 사진 카드와 hover 모션을 복원한 버전입니다. 사이트 이름, 상단 소개와 설명 문장, 샘플 안내 문구만 삭제했습니다.
+공개용 동작은 `public.js`, 편집용 동작은 `app.js`, 공통 커서는 `cursor.js`입니다. 파비콘은 `favicon.svg`이며 빌드 시 페이지에 포함됩니다.
 
 ## 글꼴과 커서
 
