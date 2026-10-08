@@ -68,3 +68,10 @@ footer{background:var(--fresh-green);color:var(--dark);border-color:var(--dark)}
 .card-alt-name{font-size:12px;font-weight:400;letter-spacing:.025em;line-height:1.4;margin-top:3px;color:var(--sheet-ink);opacity:.78;overflow-wrap:anywhere}.card-alt-name+.card-community{margin-top:5px}#detail-alt-name{font-size:14px;letter-spacing:.03em;margin-top:-6px;margin-bottom:14px}
 .intro-bottom{flex-direction:column;align-items:flex-end;gap:8px}.intro-bottom #total{max-width:none}.bgm-player{display:flex;align-items:center;gap:7px;font-size:10px;font-weight:600;color:var(--poster-lime);letter-spacing:.03em}.bgm-player button{display:inline-flex;align-items:center;justify-content:center;background:transparent;color:inherit;border:0;padding:4px;font-size:inherit;line-height:1;min-width:0}.bgm-player button:hover{background:transparent;color:inherit;opacity:.7}.bgm-player button:focus-visible{outline:1px solid currentColor;outline-offset:2px}.bgm-player svg{width:1em;height:1em;fill:currentColor}.bgm-player #bgm-time{padding:0;font:inherit;font-variant-numeric:tabular-nums;white-space:nowrap}.bgm-player button[aria-pressed=true]{opacity:.5}
 @media(max-width:700px){.bgm-player{font-size:8px}.card-alt-name{font-size:10px}}
+
+/* Full-height lettering inside the unchanged 66px / 30px spine. */
+.archive-identity .archive-subtitle[data-copy=subtitle]{font-size:21.6px}
+.archive-spine{overflow:hidden}.archive-spine>span.spine-line{position:absolute;left:50%;top:50%;display:block;width:max-content;max-width:none;writing-mode:horizontal-tb;white-space:nowrap;font-size:66px;line-height:1;letter-spacing:0;transform:translate(-50%,-50%) rotate(90deg) scale(var(--spine-stretch,1),var(--spine-cross,.88));transform-origin:center}
+.spine-line [data-copy=spine]{display:inline-block;white-space:pre}.spine-letter{display:inline-block;transform-origin:center;will-change:auto}.spine-letter.spine-space{white-space:pre}
+@media(max-width:700px){.archive-identity .archive-subtitle[data-copy=subtitle]{font-size:16.8px}.archive-spine>span.spine-line{font-size:36px}}
+@media(prefers-reduced-motion:reduce){.spine-letter{transform:none!important}}

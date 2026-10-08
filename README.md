@@ -94,7 +94,7 @@ Pretendard 공식 패키지의 Pretendard Variable WOFF2를 로컬 보관하고 
 
 현재 색상은 Fallen Angels 레퍼런스의 Lava Red #E42217, Lemon Lime #A9ED3D, Fresh Green #34CD3F, Black Bean #081910을 사용합니다. 레퍼런스 이미지에 표기된 네 HEX 색을 그대로 사용합니다. 빨강 배경/라임 글자의 상단, 라임 배경/빨강 연도, 초록 배경/검정 글자, 검정 배경/초록 연도를 순서대로 배치하며 푸터는 초록 배경/검정 글자입니다. ONE NAN은 이전 THE CHARACTER FILES 문구를 대체하며 위에 한 줄 여백을 두고 Postype 링크보다 굵게 표시합니다. 기존 게시 자료의 이전 문구도 표시할 때 변환하되 다른 사용자 문구는 유지합니다. 제목의 타원과 기울기, 연도 글자의 굵기를 조정했으며 캐릭터 영역의 열 수·사진 크기·간격·padding·hover 전환값은 이전 버전과 데스크톱 및 모바일에서 동일하게 유지했습니다. ARCHIVED WITH AFFECTION / HANDLE WITH CARE와 PERSONAL COLLECTION / EST. IN MEMORIES는 제거했습니다.
 
-왼쪽 CHARACTER ARCHIVE의 `숫자 / ∞`는 현재 표시하는 캐릭터 수를 자동으로 표시합니다. 관리 페이지에서는 임시 작업 자료 수, 공개 페이지에서는 게시된 자료 수입니다. 기존 문구 파일에 포함된 고정 숫자는 표시 전에 제거합니다.
+왼쪽 Character archive의 숫자/무한대 표시는 제거했습니다. 기존 문구 파일에 포함된 고정 숫자도 표시 전에 제거합니다. 상단 캐릭터·연도 수 표시는 자료에 따라 자동으로 갱신됩니다.
 
 Transcity Regular는 사용자가 제공한 원본 OTF를 왼쪽 Character archive 문구에만 적용합니다. 글꼴에 없는 숫자·슬래시·무한대·em dash는 Pretendard로 표시합니다. 다른 영역은 Pretendard를 유지합니다. 폰트는 배포 HTML에 포함하여 외부 글꼴 요청 없이 표시합니다. 출처와 파일 메타데이터는 assets/fonts/Transcity-SOURCE.txt에 기록했습니다.
 
@@ -108,3 +108,7 @@ Transcity Regular는 사용자가 제공한 원본 OTF를 왼쪽 Character archi
 업로드된 MP3 원본을 `assets/audio/bgm.mp3`로 보관하고 두 사이트에서 재생합니다. 사용자 음악 파일에 별도의 라이선스를 추정하지 않습니다. 캐릭터 수 표시 위의 컨트롤은 완전 멈춤(0초로 돌아가기), 일시 정지(위치 유지), 재생, 현재/전체 시간을 제공합니다. 카운트 표시보다 살짝 큰 크기(음악 컨트롤 데스크톱 10px, 모바일 8px; 카운트 9px/7px)입니다. 소리 있는 자동 재생을 시도하고 차단되면 첫 사용자 상호작용 또는 플레이 버튼으로 시작합니다. 사용자 멈춤·정지 후에는 자동 재개하지 않습니다. 재생 시 반복됩니다. 음악은 외부 플랫폼을 임베드하지 않고 동일 사이트에서 제공합니다.
 
 Transcity 원본에는 숫자·슬래시·무한대·em dash가 없습니다. 이 기호를 동일 글꼴로 표시할 수 없어 Pretendard를 사용합니다. 다른 영역의 폰트는 Pretendard를 유지합니다.
+
+ONE NAN만 이전 글자 크기의 2배(21.6px / 모바일 16.8px)입니다. X 계정 링크와 Postype는 유지합니다. 왼쪽 Transcity 문구의 기본 크기는 이전의 3배(66px / 모바일 36px)이며 영역은 기존 66px / 모바일 30px 그대로입니다. 세로 높이에 맞춰 문구를 배치하며 스크롤 시 글자들이 순서를 유지한 채 짧은 연쇄 움직임 후 원위치로 돌아옵니다. 동작 줄이기 설정에서는 움직이지 않으며 문구 편집 중에도 효과를 중지합니다. 스크린리더에는 분리된 글자 대신 전체 문구를 제공합니다.
+
+파비콘은 무료 SIL OFL 1.1의 Noto Serif TC 600에서 是 한 글자를 벡터 윤곽으로 추출했습니다. 배경 #081910, 글자 #A9ED3D이며 외부 폰트 로딩이 필요 없습니다. 출처·폰트 해시·라이선스는 assets/fonts/Favicon-SOURCE.txt와 NotoSerifTC-OFL.txt에 포함했습니다.

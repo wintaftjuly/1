@@ -29,7 +29,6 @@ function validateCopy(data) {
 }
 function applyCopy() {
  document.querySelectorAll('[data-copy]').forEach(node => { if (node.dataset.copy in siteCopy) node.textContent = siteCopy[node.dataset.copy]; });
- $('#spine-count').textContent = ' — ' + String(records.length).padStart(2,'0') + ' / ∞';
  document.title = [siteCopy.titleLead, siteCopy.titleAccent].filter(Boolean).join(' ') || 'Character Archive';
 }
 function showDetail(id) {

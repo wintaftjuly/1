@@ -30,7 +30,7 @@ for (const file of ['left_ptr.svg', 'hand2.svg', 'xterm.svg']) {
   css = css.replaceAll(`assets/cursors/${file}`, cursorData(`assets/cursors/${file}`));
 }
 const mediaValidation = read('shared/media.mjs').replaceAll('export function ', 'function ');
-let app = (mediaValidation + '\n' + read('app.js') + '\n' + read('publish.js') + '\n' + read('audio.js') + '\n' + read('cursor.js'))
+let app = (mediaValidation + '\n' + read('app.js') + '\n' + read('publish.js') + '\n' + read('audio.js') + '\n' + read('spine.js') + '\n' + read('cursor.js'))
   .replaceAll('img.src=r.image;', 'img.src=BUNDLED_PORTRAITS[r.image]||r.image;')
   .replace("$('#detail-image').src=r.image;", "$('#detail-image').src=BUNDLED_PORTRAITS[r.image]||r.image;")
   .replace('async function loadCopy(){', 'async function loadCopy(){publishedCopy=validateCopy(BUNDLED_COPY);')
@@ -48,7 +48,7 @@ let publicTemplate = editorTemplate
 const toolbarStart = publicTemplate.indexOf('<div id="copy-toolbar"');
 const cursorStart = publicTemplate.indexOf('<div id="cursor"');
 publicTemplate = publicTemplate.slice(0, toolbarStart) + publicTemplate.slice(cursorStart);
-let reader = `const BUNDLED_CURSORS=${encode(cursors)};\nconst BUNDLED_PORTRAITS=${encode(portraits)};\nconst BUNDLED_ARCHIVE=${encode(JSON.parse(read('archive.json')))};\nconst BUNDLED_COPY=${encode(JSON.parse(read('settings.json')))};\n${mediaValidation}\n${read('public.js')}\n${read('audio.js')}\n${read('cursor.js')}`;
+let reader = `const BUNDLED_CURSORS=${encode(cursors)};\nconst BUNDLED_PORTRAITS=${encode(portraits)};\nconst BUNDLED_ARCHIVE=${encode(JSON.parse(read('archive.json')))};\nconst BUNDLED_COPY=${encode(JSON.parse(read('settings.json')))};\n${mediaValidation}\n${read('public.js')}\n${read('audio.js')}\n${read('spine.js')}\n${read('cursor.js')}`;
 reader = reader.replaceAll('</script', '<\\/script');
 function compile(template, script) {
  const csp = `default-src 'self'; script-src 'self' ${hash(script)}; style-src 'self' ${hash(css)}; img-src 'self' data: https:; media-src 'self'; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'`;
@@ -66,6 +66,7 @@ function outputDirectory(name, bundle) {
  for (const file of ['archive.json','settings.json','.nojekyll','favicon.svg']) copyFileSync(resolve(root,file),resolve(output,file));
  mkdirSync(resolve(output,'assets/fonts'),{recursive:true}); copyFileSync(resolve(root,'assets/fonts/Pretendard-OFL.txt'),resolve(output,'assets/fonts/Pretendard-OFL.txt'));
  copyFileSync(resolve(root,'assets/fonts/Transcity-SOURCE.txt'),resolve(output,'assets/fonts/Transcity-SOURCE.txt'));
+ for (const file of ['NotoSerifTC-OFL.txt','Favicon-SOURCE.txt']) copyFileSync(resolve(root,'assets/fonts/'+file),resolve(output,'assets/fonts/'+file));
  cpSync(resolve(root,'assets/audio'),resolve(output,'assets/audio'),{recursive:true});
  cpSync(resolve(root,'assets/cursors'),resolve(output,'assets/cursors'),{recursive:true});
 }
