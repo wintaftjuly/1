@@ -44,3 +44,26 @@ GitHub는 필수가 아닙니다. Cloudflare Pages 등의 직접 업로드를 �
 ## 현재 시각 방향
 
 첨부된 색상 레퍼런스의 초록 `#3CA081`, 적갈색 `#B1302B`, 크림 `#F5DEAF`를 적용했습니다. 가독성을 위해 어두운 갈색을 보조색으로 사용합니다. 로컬 SVG 커서는 픽셀 화살표·선택 도구 모티프이며, 작은 컬러 스와치와 선택 테두리 장식은 1990년대 말 그래픽 편집기를 참고했습니다. 터치 기기에는 커서를 표시하지 않습니다.
+
+## 비공개 저장소 + Cloudflare Pages
+
+GitHub Pages를 바로 중단하거나 저장소를 먼저 비공개로 바꾸지 마세요. 다음 순서로 옮깁니다.
+
+1. `https://dash.cloudflare.com/sign-up`에서 무료 Cloudflare 계정을 만듭니다.
+2. 대시보드의 `Workers & Pages`에서 Pages 프로젝트를 만들고 GitHub 저장소를 연결합니다. GitHub 연결 승인 시 `wintaftjuly/1` 저장소만 선택해도 됩니다. 도메인 구매나 DNS 변경 없이 `pages.dev` 주소를 쓸 수 있습니다.
+3. 저장소 `wintaftjuly/1`, 운영 브랜치 `main`, 프레임워크 `None`, 빌드 명령 `node scripts/build.mjs`, 출력 디렉터리 `dist`로 설정합니다. 루트 디렉터리는 비워 두고 배포합니다.
+4. 생성된 `https://<프로젝트명>.pages.dev/`에서 연도 그룹, 사진, 문구 편집과 관리 기능을 확인합니다. Pages 사이트는 공개이고, 현재 편집은 여전히 방문자 브라우저에만 저장됩니다.
+5. 새 주소가 정상적으로 열린 다음 GitHub 저장소 `Settings → General → Danger Zone → Change repository visibility → Make private`를 선택합니다. 저장소 비공개 전환으로 기존 GitHub Pages 주소는 플랜에 따라 사용할 수 없게 될 수 있습니다.
+6. 비공개 전환 후에도 Cloudflare GitHub 앱이 저장소에 접근할 수 있는지 확인하고 새 배포가 성공하는지 검증합니다. 이후 수정은 비공개 저장소에 올리면 Pages가 재배포합니다.
+
+빌드는 스타일·실행 코드·샘플 초상·커서·초기 데이터를 포함한 단일 `index.html`을 생성하고, 필요한 공개 데이터 파일만 `dist/`에 복사합니다. README, 빌드 스크립트, Git 기록은 배포하지 않습니다. `node scripts/build.mjs`는 반복 실행할 수 있으며 의존성 설치가 필요 없습니다. Cloudflare의 현재 무료 요금 한도와 가입 화면을 확인하세요. 유료 기능이나 도메인 구매는 이 정적 사이트에 필요하지 않습니다.
+
+이전 도메인과 새 도메인의 localStorage는 공유되지 않습니다. 캐릭터와 문구를 기존 사이트에서 로컬 편집했다면 각각 `archive.json`, `settings.json`으로 내보내 백업하고 새 사이트에서 가져오세요. 공개 원본에도 반영하려면 GitHub의 해당 파일을 교체해야 합니다.
+
+저장소를 비공개로 해도 웹사이트가 브라우저에 전달하는 HTML, CSS, JavaScript, 이미지와 공개 JSON은 열람 가능합니다. 파일 압축은 접근 제어가 아닙니다. 이미 공개된 기록이나 복사본을 비공개 전환으로 회수할 수는 없습니다.
+
+## 배포 파일 로딩 실패 대응
+
+GitHub Pages의 루트 `index.html`은 생성된 독립 실행 페이지입니다. 별도 CSS·JavaScript·샘플 이미지 요청이 실패해도 기본 화면과 편집 기능이 실행됩니다. `settings.json`과 `archive.json`이 읽히면 최신 공개 자료를 사용하고, 읽지 못하면 마지막 빌드에 포함된 자료를 표시합니다.
+
+HTML 수정은 `src/index.html`, 스타일은 `style.css`, 동작은 `app.js`에서 하고 `node scripts/build.mjs`를 실행하세요. 생성된 `index.html`, `_headers`도 함께 커밋해야 GitHub Pages에 반영됩니다. Cloudflare Pages 빌드는 이 명령으로 최신 결과를 생성합니다. `_headers`에는 인라인 코드의 정확한 SHA-256을 허용하는 CSP를 생성하며 `unsafe-inline`을 허용하지 않습니다. 저장소나 사이트를 비공개로 바꾸는 작업은 아직 수행하지 않았습니다.
