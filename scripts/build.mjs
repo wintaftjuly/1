@@ -36,8 +36,9 @@ const tapes = [
  {ratio:'637 / 205',width:126},
 ].map((tape,i)=>({...tape,src:`data:image/png;base64,${readFileSync(resolve(root,`assets/tapes/tape-${i+1}.png`)).toString('base64')}`}));
 const galleryLayout = read('shared/gallery.mjs').replaceAll('export function ', 'function ');
+const orderLogic = read('shared/order.mjs').replaceAll('export function ', 'function ');
 const mediaValidation = read('shared/media.mjs').replaceAll('export function ', 'function ');
-let app = (publishedLoader + '\n' + galleryLayout + '\n' + mediaValidation + '\n' + read('app.js') + '\n' + read('publish.js') + '\n' + read('audio.js') + '\n' + read('spine.js') + '\n' + read('cursor.js'))
+let app = (publishedLoader + '\n' + galleryLayout + '\n' + mediaValidation + '\n' + orderLogic + '\n' + read('manager-order.js') + '\n' + read('app.js') + '\n' + read('publish.js') + '\n' + read('audio.js') + '\n' + read('spine.js') + '\n' + read('cursor.js'))
   .replaceAll('img.src=r.image;', 'img.src=BUNDLED_PORTRAITS[r.image]||r.image;')
   .replace("$('#detail-image').src=r.image;", "$('#detail-image').src=BUNDLED_PORTRAITS[r.image]||r.image;")
   .replace('async function loadCopy(){', 'async function loadCopy(){publishedCopy=validateCopy(BUNDLED_COPY);')

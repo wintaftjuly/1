@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import {reorderWithinYear} from '../shared/order.mjs';
+import {validateState} from '../worker/index.mjs';
+import fs from 'node:fs';
+const rows=[{id:'a',year:2025},{id:'x',year:2024},{id:'b',year:2025},{id:'c',year:2025},{id:'y',year:2024}];
+const ids=rows=>rows.map(row=>row.id);
+assert.deepEqual(ids(reorderWithinYear(rows,'a','c',true)),['b','x','c','a','y']);
+assert.deepEqual(ids(reorderWithinYear(rows,'c','a')),['c','x','a','b','y']);
+assert.equal(reorderWithinYear(rows,'a','x'),rows);
+assert.equal(reorderWithinYear(rows,'a','a'),rows);
+assert.equal(reorderWithinYear(rows,'missing','a'),rows);
+assert.deepEqual(ids(rows),['a','x','b','c','y']);
+const archive=JSON.parse(fs.readFileSync(new URL('../archive.json',import.meta.url)));
+const settings=JSON.parse(fs.readFileSync(new URL('../settings.json',import.meta.url)));
+const changed=reorderWithinYear(archive,archive[0].id,archive[2].id,true);
+assert.deepEqual(ids(validateState({archive:changed,settings}).archive),ids(changed));
+console.log('PASS same-year reorder preserves data/other years and publishing preserves chosen order');
