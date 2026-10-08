@@ -37,6 +37,8 @@ body{background:var(--poster-red)}header{border-bottom:1px solid #25252766}heade
 @media(max-width:700px){.intro{padding-top:27px;padding-bottom:24px;gap:22px}.intro h1{font-size:clamp(42px,10.6vw,68px);letter-spacing:-.075em}.archive-subtitle{font-size:7px;letter-spacing:.13em;margin-top:15px}.intro-bottom>span:last-child{font-size:7px;padding:6px 0;max-width:none}.year-title span{font-size:8px}.archive-spine>span:first-child,.archive-spine>span:last-child{font-size:12px}}
 
 /* Requested card labels at exactly twice their previous responsive sizes. */
-.card-name{font-size:26px}.card-community{font-size:20px}
-@media(max-width:900px){.card-name{font-size:24px}}
-@media(max-width:700px){.card-name{font-size:22px}.card-community{font-size:16px}}
+.card-name{font-size:24px}.card-community{font-size:16px}
+@media(max-width:900px){.card-name{font-size:22px}}
+@media(max-width:700px){.card-name{font-size:20px}.card-community{font-size:13px}}
+
+.archive-postype{display:block;width:fit-content;margin-top:8px;text-decoration:underline;text-underline-offset:3px;transition:opacity .18s ease}.archive-postype:hover{opacity:.7}.archive-postype:focus-visible{outline:2px solid currentColor;outline-offset:5px}
