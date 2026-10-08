@@ -16,7 +16,7 @@ python3 -m http.server 8000 --bind 0.0.0.0 --directory dist
 
 상단 `아카이브 관리`에서 등록·수정·삭제합니다. 사진은 PNG/JPEG/WebP, 최대 5MB이며 저장 전에 최대 1000px WebP로 변환합니다. 브라우저의 localStorage에 저장하며 다른 방문자의 원본을 수정하지 않습니다. `자료 내보내기`로 사진을 포함한 `archive.json`을 백업하고, `자료 가져오기`로 복원합니다.
 
-모든 방문자에게 공개하려면 내보낸 `archive.json`을 GitHub 저장소의 같은 파일에 업로드하고 `main`에 커밋하세요. 사이트에서 편집한 자료는 해당 브라우저에만 저장됩니다. 사이트 데이터 삭제나 브라우저 저장 공간 제한에 대비해 백업하세요.
+Cloudflare 관리 페이지에서 상단 `공개 사이트에 게시`를 누르면 사진과 문구가 공개 페이지에 반영됩니다. 사이트 데이터 삭제나 브라우저 저장 공간 제한에 대비해 자료를 내보내 백업하세요. GitHub Pages에는 서버 게시 기능이 없으므로 이 기능은 Cloudflare에서 사용합니다.
 
 이전 업데이트에서 제거된 샘플은 한 번만 복원합니다. 같은 ID로 직접 수정한 기록은 덮어쓰지 않으며 직접 등록한 캐릭터도 보존합니다. 복원 후에 사용자가 삭제한 캐릭터는 다시 추가하지 않습니다.
 
@@ -24,33 +24,57 @@ python3 -m http.server 8000 --bind 0.0.0.0 --directory dist
 
 `문구 편집`을 누른 뒤 점선 제목을 수정합니다. `모든 문구`에서는 제목, 캐릭터 수 단위, 사진 hover 문구, 관리 화면 제목을 바꿀 수 있습니다. `저장`은 현재 브라우저에 적용하고 `취소`는 편집 이전으로 되돌립니다.
 
-전체 공개: `공개용 문구 내보내기`로 받은 `settings.json`을 GitHub 저장소의 같은 파일에 업로드하고 `main`에 커밋하세요. 로컬 문구가 공개 문구보다 우선하므로 새 공개 문구를 확인하려면 시크릿 창을 사용하거나 `기본 문구로 되돌리기 → 저장`을 선택하세요. 문구 파일은 50KB, 각 문구는 600자 이하입니다.
+전체 공개: 문구를 저장한 뒤 상단의 `공개 사이트에 게시`를 누릅니다. `문구 백업 내보내기`는 settings.json 백업용입니다. 로컬 문구가 공개 문구보다 우선하므로 새 공개 문구를 확인하려면 시크릿 창을 사용하거나 `기본 문구로 되돌리기 → 저장`을 선택하세요. 문구 파일은 50KB, 각 문구는 600자 이하입니다.
 
 ## GitHub Pages
 
 `.github/workflows/pages.yml`은 main 변경 또는 수동 실행 시 독립 실행 페이지를 빌드하고 `dist/`를 배포합니다. 저장소 Pages 설정의 Source는 GitHub Actions를 사용합니다. 공개 주소는 `https://wintaftjuly.github.io/1/`입니다. 업데이트 확인은 Actions에서 가장 최근 실행의 성공 상태를 확인한 뒤 수행합니다.
 
-## Cloudflare Workers: 공개용과 편집용 분리
+## Cloudflare Workers: 로그인하고 직접 게시하기
 
-공개 Worker: `autumn-glitter-ba0e`, 주소 `https://autumn-glitter-ba0e.julyandwinter.workers.dev/`.
+공개 주소: `https://autumn-glitter-ba0e.julyandwinter.workers.dev/`
+관리 Worker 이름: `autumn-glitter-ba0e-admin`. 관리 주소는 이 Worker 생성 후 `https://autumn-glitter-ba0e-admin.julyandwinter.workers.dev/`입니다.
 
-Cloudflare Workers & Pages → 해당 Worker → Settings → Builds에서 연결 저장소와 main 브랜치를 확인하고 아래 명령을 저장합니다.
+### 저장소 연결
 
-- Build command: `node scripts/build.mjs`
-- Deploy command: `npx wrangler deploy`
-- Root directory: 저장소 루트 (비움)
+Cloudflare Storage & Databases → KV에서 `character-archive` Namespace를 하나 만듭니다. Namespace ID를 두 Wrangler 파일의 같은 `kv_namespaces` 항목에 설정합니다. binding 이름은 `ARCHIVE_STORE`입니다. ID는 비밀키가 아닙니다. 설정 스크립트는 `node scripts/configure-kv.mjs <Namespace-ID>`입니다. **공개용과 관리용이 반드시 같은 Namespace를 사용해야 합니다.**
 
-`wrangler.jsonc`는 `dist/`만 공개합니다. 공개 페이지에는 관리·문구 편집 코드가 없으며 localStorage의 개인 수정도 읽지 않습니다. GitHub Pages도 같은 공개용 산출물을 사용합니다.
+### 공개 Worker
 
-편집용은 별도 Worker `autumn-glitter-ba0e-admin`을 생성합니다. **편집용 파일을 배포하기 전에** 해당 Worker → Access → Protect this Worker behind Access → All traffic에서 본인 이메일만 허용하는 인증 정책을 설정합니다. Zero Trust 활성화가 필요할 수 있습니다. Worker 전체에 적용해 workers.dev·추가 도메인·미리보기 URL까지 보호합니다. 링크를 분리하는 것만으로는 인증이 되지 않습니다.
+기존 Worker의 main 브랜치, Build command `node scripts/build.mjs`, Deploy command `npx wrangler deploy`로 Git 연동 배포합니다. `wrangler.jsonc`는 공개용 `dist/`와 `worker/index.mjs`를 배포합니다. Worker는 KV에 게시된 자료가 있으면 사용하고, 최초 게시 전에는 저장소의 archive.json/settings.json을 표시합니다. 배포를 다시 해도 KV 게시 자료는 덮어쓰지 않습니다.
 
-보호를 설정한 편집용 Worker에 같은 저장소를 연결하고 Build command는 동일하게, Deploy command는 `npx wrangler deploy --config wrangler.admin.jsonc`로 지정합니다. 편집용 산출물은 `dist-admin/`입니다. 별도 브라우저에서 비로그인 접근이 차단되는지 확인한 뒤 사용합니다.
+### 관리 Worker와 본인 로그인
 
-편집은 해당 브라우저에 저장됩니다. 모든 방문자에게 반영하려면 편집용에서 내보낸 `archive.json`과 `settings.json`을 저장소에 업데이트합니다. 서버에 직접 저장하거나 자동 게시하는 기능은 현재 없습니다. 다른 주소로 옮기기 전에 기존 편집 자료를 내보내 백업하세요.
+1. 별도 Worker `autumn-glitter-ba0e-admin`을 생성합니다.
+2. 해당 Worker의 Access에서 Protect this Worker behind Access → All traffic을 선택하고 **본인 이메일만** 허용합니다. 모든 도메인·경로·미리보기까지 보호합니다. Zero Trust 무료 플랜을 사용할 수 있습니다.
+3. Access 애플리케이션에서 Application Audience (AUD)를 확인합니다. Zero Trust 팀 도메인(`팀이름.cloudflareaccess.com`)도 확인합니다.
+4. 관리 Worker의 Settings → Variables and Secrets에 `ACCESS_TEAM_DOMAIN`과 `ACCESS_AUD`를 설정합니다. 둘은 인증 비밀번호가 아닌 애플리케이션 식별값입니다. 개인 이메일은 코드에 넣지 않고 Access 정책에서 지정합니다.
+5. 같은 저장소를 연결하고 Build command `node scripts/build.mjs`, Deploy command `npx wrangler deploy --config wrangler.admin.jsonc`로 배포합니다. 설정의 keep_vars는 대시보드 인증 변수를 유지합니다.
+6. 로그인 후 관리 페이지를 엽니다. 비로그인 창에서는 로그인 화면으로 이동하거나 접근이 차단되는지 확인합니다.
 
-새 공개 Worker에서 정상 표시를 확인한 뒤 GitHub Settings → General → Danger Zone → Change visibility에서 저장소를 Private으로 전환하세요. Cloudflare GitHub 연결에 이 비공개 저장소 접근 권한이 있어야 합니다. 기존 무료 GitHub Pages는 중단될 수 있습니다. Workers 배포·Access·저장소 비공개 전환은 계정 대시보드에서 별도로 수행해야 합니다.
+관리 Worker는 페이지와 API 전체에서 Access JWT의 RSA 서명·발급자·대상 AUD·만료를 검사합니다. 인증 설정이 빠지면 503, 유효한 인증이 없으면 401로 접근을 차단합니다. 공개 Worker의 게시 요청은 항상 거부됩니다. 게시 API는 동일 출처의 JSON 요청만 허용합니다. URL 분리나 숨겨진 버튼을 인증으로 취급하지 않습니다.
 
-웹사이트 주소에는 GitHub 계정·저장소 경로가 포함되지 않습니다. 원본 저장소는 비공개로 보호할 수 있지만 브라우저에 전달하는 HTML/CSS/JavaScript와 이미지는 열람 가능합니다. 무료 플랜도 사용량 한도가 있습니다.
+### 편집과 게시
+
+- 캐릭터 등록·수정·삭제와 문구 편집의 저장은 해당 브라우저의 임시 작업 자료입니다.
+- 상단 `공개 사이트에 게시` → `지금 게시하기`를 누르면 사진·캐릭터·문구를 함께 KV에 저장합니다.
+- 공개 페이지를 새로고침하면 바뀐 자료를 표시합니다. KV 특성상 다른 지역까지 반영되는 데 60초 이상 걸릴 수 있으며 즉시 일관성을 보장하지 않습니다.
+- 사진과 JSON 전체는 24MB, 캐릭터는 300명 이하입니다. 이미지 한 장은 변환 후 약 2.5MB 이하입니다. 브라우저 localStorage 제한이 먼저 걸릴 수 있으며 실패 시 게시 전 백업을 권장합니다.
+- 한 명이 한 관리 창에서 게시하는 용도입니다. 여러 창에서 동시에 게시하면 마지막 저장이 적용될 수 있습니다. 게시 전 자료·문구 내보내기로 백업할 수 있습니다. 자동 버전 복구 기능은 없습니다.
+- 공개 사이트는 개인 브라우저의 임시 작업 자료를 읽지 않습니다. 기존 도메인의 임시 자료는 내보내기/가져오기로 옮깁니다.
+
+KV 무료 플랜은 일일 읽기·쓰기 및 저장 용량 한도가 있습니다. 사용량을 초과하면 요청이 실패할 수 있으므로 무제한 무료를 보장하지 않습니다. 이 구성은 R2나 유료 플랜 가입을 요구하지 않습니다. 비밀키를 브라우저나 GitHub에 저장하지 않습니다.
+
+### 확인
+
+```sh
+node scripts/build.mjs
+node tests/publishing.mjs
+```
+
+Node.js 22 이상에서 인증 서명·만료·잘못된 AUD·서명 위조·공개 쓰기 거부·다른 출처 요청 거부·자료 검증·게시 후 공개 조회를 검사합니다. 실제 Cloudflare KV 연결과 Access 정책은 계정에서 배포 후 별도로 확인해야 합니다.
+
+새 공개 Worker에서 정상 표시를 확인한 뒤 GitHub 저장소를 Private으로 전환할 수 있습니다. Cloudflare GitHub 앱은 이 비공개 저장소 접근 권한이 있어야 합니다. 원본 저장소는 비공개로 보호할 수 있지만 브라우저에 전달하는 HTML/CSS/JavaScript와 공개 이미지는 열람 가능합니다.
 
 ## 보안
 

@@ -2,6 +2,19 @@
   "name": "autumn-glitter-ba0e-admin",
   "compatibility_date": "2026-10-08",
   "assets": {
-    "directory": "./dist-admin"
-  }
+    "directory": "./dist-admin",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  },
+  "main": "worker/index.mjs",
+  "vars": {
+    "ADMIN_MODE": "true"
+  },
+  "keep_vars": true,
+  "kv_namespaces": [
+    {
+      "binding": "ARCHIVE_STORE",
+      "id": "a3db706300284f4d99e7c538791848d8"
+    }
+  ]
 }

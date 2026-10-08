@@ -27,7 +27,7 @@ const cursors = {
 for (const file of ['left_ptr.svg', 'hand2.svg', 'xterm.svg']) {
   css = css.replaceAll(`assets/cursors/${file}`, cursorData(`assets/cursors/${file}`));
 }
-let app = (read('app.js') + '\n' + read('cursor.js'))
+let app = (read('app.js') + '\n' + read('publish.js') + '\n' + read('cursor.js'))
   .replaceAll('img.src=r.image;', 'img.src=BUNDLED_PORTRAITS[r.image]||r.image;')
   .replace("$('#detail-image').src=r.image;", "$('#detail-image').src=BUNDLED_PORTRAITS[r.image]||r.image;")
   .replace('async function loadCopy(){', 'async function loadCopy(){publishedCopy=validateCopy(BUNDLED_COPY);')
@@ -41,7 +41,7 @@ const editorTemplate = read('src/index.html');
 let publicTemplate = editorTemplate
  .replace(/<div class="header-actions">[\s\S]*?<\/div>/, '')
  .replace(/<button id="edit-selected"[\s\S]*?<\/button>/, '')
- .replace(/<dialog id="(?:manager|editor)"[\s\S]*?<\/dialog>/g, '');
+ .replace(/<dialog id="(?:manager|editor|publish-dialog)"[\s\S]*?<\/dialog>/g, '');
 const toolbarStart = publicTemplate.indexOf('<div id="copy-toolbar"');
 const cursorStart = publicTemplate.indexOf('<div id="cursor"');
 publicTemplate = publicTemplate.slice(0, toolbarStart) + publicTemplate.slice(cursorStart);
