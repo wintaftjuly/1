@@ -1,0 +1,66 @@
+[
+  {
+    "id": "sample-0",
+    "name": "서이현",
+    "year": 2025,
+    "community": "여름의 잔상",
+    "image": "assets/portrait-1.svg",
+    "note": "디자인을 살펴보기 위한 가상 캐릭터입니다. 실제 캐릭터의 사진과 이야기로 바꿔 주세요."
+  },
+  {
+    "id": "sample-1",
+    "name": "윤서하",
+    "year": 2025,
+    "community": "여름의 잔상",
+    "image": "assets/portrait-2.svg",
+    "note": "디자인을 살펴보기 위한 가상 캐릭터입니다. 실제 캐릭터의 사진과 이야기로 바꿔 주세요."
+  },
+  {
+    "id": "sample-2",
+    "name": "백도윤",
+    "year": 2025,
+    "community": "서로의 궤도",
+    "image": "assets/portrait-3.svg",
+    "note": "디자인을 살펴보기 위한 가상 캐릭터입니다. 실제 캐릭터의 사진과 이야기로 바꿔 주세요."
+  },
+  {
+    "id": "sample-3",
+    "name": "한유진",
+    "year": 2025,
+    "community": "서로의 궤도",
+    "image": "assets/portrait-4.svg",
+    "note": "디자인을 살펴보기 위한 가상 캐릭터입니다. 실제 캐릭터의 사진과 이야기로 바꿔 주세요."
+  },
+  {
+    "id": "sample-4",
+    "name": "차은재",
+    "year": 2024,
+    "community": "푸른 시간",
+    "image": "assets/portrait-5.svg",
+    "note": "디자인을 살펴보기 위한 가상 캐릭터입니다. 실제 캐릭터의 사진과 이야기로 바꿔 주세요."
+  },
+  {
+    "id": "sample-5",
+    "name": "강태오",
+    "year": 2024,
+    "community": "푸른 시간",
+    "image": "assets/portrait-6.svg",
+    "note": "디자인을 살펴보기 위한 가상 캐릭터입니다. 실제 캐릭터의 사진과 이야기로 바꿔 주세요."
+  },
+  {
+    "id": "sample-6",
+    "name": "문하린",
+    "year": 2023,
+    "community": "이름 없는 계절",
+    "image": "assets/portrait-7.svg",
+    "note": "디자인을 살펴보기 위한 가상 캐릭터입니다. 실제 캐릭터의 사진과 이야기로 바꿔 주세요."
+  },
+  {
+    "id": "sample-7",
+    "name": "정시온",
+    "year": 2023,
+    "community": "이름 없는 계절",
+    "image": "assets/portrait-8.svg",
+    "note": "디자인을 살펴보기 위한 가상 캐릭터입니다. 실제 캐릭터의 사진과 이야기로 바꿔 주세요."
+  }
+]
