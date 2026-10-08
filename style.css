@@ -88,5 +88,7 @@ footer{background:var(--fresh-green);color:var(--dark);border-color:var(--dark)}
 .copy-loading body{visibility:hidden}
 
 /* Preserve the original portrait crop and hover motion. */
-.card-tape{position:absolute;z-index:2;left:50%;top:0;width:var(--tape-width);max-width:48%;background-repeat:no-repeat;background-size:100% 100%;pointer-events:none;transform:translate(calc(-50% + var(--tape-x)),calc(-50% + var(--tape-y))) rotate(var(--tape-angle)) scale(var(--tape-scale));filter:drop-shadow(0 1px 1px #08191033)}
+.card-tape{position:absolute;z-index:2;left:50%;top:0;width:var(--tape-width);max-width:48%;background-repeat:no-repeat;background-size:100% 100%;pointer-events:none;transform:translate(calc(-50% + var(--tape-x)),calc(-50% + var(--tape-y))) rotate(var(--tape-angle)) scale(calc(var(--tape-scale)*1.2));filter:url(#tape-sharpen) drop-shadow(0 1px 1px #08191033)}
 @media(max-width:700px){.card-tape{width:calc(var(--tape-width)*.8)}}
+
+.tape-filter-defs{position:absolute;width:0;height:0;overflow:hidden;pointer-events:none}
