@@ -96,6 +96,8 @@ footer{background:var(--fresh-green);color:var(--dark);border-color:var(--dark)}
 
 .manage-row{position:relative}.order-handle{flex:0 0 26px;padding:8px 2px;border:0;background:transparent;color:var(--ink);font-size:23px;cursor:grab!important}.order-handle:active{cursor:grabbing!important}.order-handle:hover{background:transparent;color:var(--ink)}.manage-row.dragging{opacity:.45}.manage-row.drop-before:before,.manage-row.drop-after:after{content:'';position:absolute;left:0;right:0;height:3px;background:var(--ink);pointer-events:none}.manage-row.drop-before:before{top:-2px}.manage-row.drop-after:after{bottom:-2px}.order-buttons{display:flex;gap:3px}.order-step{padding:5px 7px;background:transparent;color:var(--ink);border:1px solid var(--line);font-size:13px}.order-step:disabled{opacity:.25;cursor:default!important}.manage-row>span{min-width:0;overflow-wrap:anywhere}.manage-row .text-button{white-space:nowrap}
 @media(max-width:700px){.manage-row{gap:7px}.manage-row>span{font-size:11px}.manage-row img{width:30px;height:40px}.order-buttons{flex-direction:column}.order-step{padding:3px 7px}}
+
+.showcase-panel{position:fixed;z-index:110;right:24px;bottom:24px;width:min(380px,calc(100vw - 48px));padding:22px;background:var(--dark);color:var(--poster-lime);border:1px solid var(--poster-lime);box-shadow:0 8px 30px #08191044}.showcase-panel strong{font-size:17px}.showcase-panel p{font-size:12px;line-height:1.7}.showcase-panel button,.showcase-panel .button{display:inline-block;background:var(--poster-lime);color:var(--dark);font-size:12px}.showcase-panel[hidden],.showcase-panel a[hidden]{display:none}.showcase-recording,.showcase-recording body{scroll-behavior:auto;scroll-snap-type:none}.showcase-recording #cursor{display:none!important}.showcase-recording .card:focus-visible{outline:none}.card.showcase-hover{transform:translateY(-5px) rotate(0);box-shadow:4px 9px 15px #41462d26}.card.showcase-hover .portrait img{transform:scale(1.045);filter:saturate(1)}.card.showcase-hover .portrait:after{opacity:1;transform:none}
 </style></head>
 <body><aside class="archive-spine"><span class="spine-line"><span data-copy="spine">Character archive</span><svg class="spine-arrow" viewBox="0 0 80 24" aria-hidden="true" focusable="false"><path d="M2 12H12l7-6 10 12 10-12 10 12 8-6H76M66 3l10 9-10 9" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="spine-progress" aria-hidden="true"></span></aside><header></header>
 <main id="top"><section class="intro"><h1><span data-copy="titleLead">얼굴의</span> <em data-copy="titleAccent">기록.</em><span class="archive-identity archive-subtitle"><span class="archive-subtitle" data-copy="subtitle">ONE NAN</span><a class="archive-social archive-subtitle" href="https://x.com/ErerWintaft" target="_blank" rel="noopener noreferrer" aria-label="ererwintaft의 X 새 창으로 열기">@ererwintaft</a></span><a class="archive-subtitle archive-postype" href="https://www.postype.com/@ererwintaft" target="_blank" rel="noopener noreferrer" aria-label="ererwintaft의 Postype 새 창으로 열기">POSTYPE · @ererwintaft ↗</a></h1><div class="intro-bottom"><div class="bgm-player" role="group" aria-label="배경 음악"><button id="bgm-stop" type="button" aria-label="완전 멈춤" title="완전 멈춤"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="2" width="8" height="8"/></svg></button><button id="bgm-pause" type="button" aria-label="일시 정지" title="일시 정지"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 2h3v8H2zM7 2h3v8H7z"/></svg></button><button id="bgm-play" type="button" aria-label="재생" title="재생"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1l8 5-8 5z"/></svg></button><span id="bgm-time" aria-label="음악 재생 시간">00:00 / --:--</span></div><audio id="bgm" src="assets/audio/bgm.mp3" autoplay loop preload="metadata"></audio><span id="total"></span></div></section><nav id="years" aria-label="활동 연도"></nav><div id="archive"></div><footer><span data-copy="footerHandle">@ererwintaft</span></footer></main>
@@ -213,6 +215,62 @@ async function refreshPublishedData() {
  render();
 }
 refreshPublishedData().finally(()=>document.documentElement.classList.remove('copy-loading'));
+
+// Local recording only. The normal public page has no recording controls.
+(()=>{
+ if(new URLSearchParams(location.search).get('showcase')!=='1')return;
+ const panel=document.createElement('section');panel.className='showcase-panel';panel.setAttribute('aria-label','포트폴리오 촬영');
+ const heading=document.createElement('strong');heading.textContent='포트폴리오 촬영';
+ const info=document.createElement('p');info.textContent='Chrome 또는 Edge에서 시작을 누르고 화면 공유 창의 현재 탭을 선택해 주세요. 자동 스크롤 후 영상 파일을 저장합니다.';
+ const start=document.createElement('button');start.type='button';start.textContent='자동 녹화 시작';
+ const status=document.createElement('p');status.setAttribute('role','status');
+ const download=document.createElement('a');download.className='button';download.hidden=true;download.textContent='녹화 파일 저장';
+ panel.append(heading,info,start,status,download);document.body.append(panel);
+ let stream,recorder,active=false,savedUrl;
+ const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+ async function moveTo(top,ms=1400){
+  if(!active)return;const from=scrollY,to=Math.max(0,Math.min(top,document.documentElement.scrollHeight-innerHeight)),began=performance.now();
+  await new Promise(resolve=>{function frame(now){if(!active)return resolve();const t=Math.min(1,(now-began)/ms),ease=t*t*(3-2*t);window.scrollTo({top:from+(to-from)*ease,behavior:'instant'});if(t===1)resolve();else requestAnimationFrame(frame)}requestAnimationFrame(frame)});
+ }
+ async function tour(){
+  await delay(1800);
+  const sections=[...document.querySelectorAll('.year-section')];
+  for(let i=0;i<sections.length&&active;i++){
+   const section=sections[i];await moveTo(section.offsetTop-54);await delay(1200);
+   const card=section.querySelector('.card');
+   if(card&&active){card.classList.add('showcase-hover');await delay(1300);card.classList.remove('showcase-hover')}
+   if(i===0&&card&&active){card.click();await delay(2400);document.querySelector('#detail').close();await delay(700)}
+   const last=section.querySelector('.card:last-child');
+   if(last&&active){const bottom=last.getBoundingClientRect().bottom+scrollY-innerHeight+70;if(bottom>scrollY+80){await moveTo(bottom,2000);await delay(1500)}}
+  }
+  if(active){await moveTo(document.documentElement.scrollHeight);await delay(2000);await moveTo(0,1800);await delay(1600)}
+ }
+ function reset(){active=false;document.querySelectorAll('.showcase-hover').forEach(card=>card.classList.remove('showcase-hover'));document.querySelector('#detail').close();document.documentElement.classList.remove('showcase-recording');panel.hidden=false;start.disabled=false;stream?.getTracks().forEach(track=>track.stop());stream=null}
+ start.onclick=async()=>{
+  if(active)return;
+  if(!navigator.mediaDevices?.getDisplayMedia||!window.MediaRecorder){status.textContent='컴퓨터의 Chrome 또는 Edge에서 열어 주세요.';return}
+  start.disabled=true;download.hidden=true;status.textContent='화면 공유 창에서 이 홈페이지 탭을 선택해 주세요.';
+  try{
+   // Call while the button activation is live; permission is always user selected.
+   stream=await navigator.mediaDevices.getDisplayMedia({video:{displaySurface:'browser',frameRate:{ideal:30,max:30}},audio:false,preferCurrentTab:true,selfBrowserSurface:'include',surfaceSwitching:'exclude'});
+   if(stream.getVideoTracks()[0]?.getSettings().displaySurface!=='browser'){reset();status.textContent='전체 화면 대신 현재 홈페이지 탭을 선택해 다시 시작해 주세요.';return}
+   if(document.documentElement.classList.contains('copy-loading')){await Promise.race([new Promise(resolve=>{const observer=new MutationObserver(()=>{if(!document.documentElement.classList.contains('copy-loading')){observer.disconnect();resolve()}});observer.observe(document.documentElement,{attributes:true,attributeFilter:['class']})}),delay(6000)])}
+   document.querySelectorAll('.portrait img').forEach(image=>image.loading='eager');
+   await Promise.race([Promise.all([...document.querySelectorAll('.portrait img')].map(image=>image.decode().catch(()=>{}))),delay(10000)]);
+   const missing=[...document.querySelectorAll('.portrait img')].filter(image=>!image.complete||!image.naturalWidth);
+   if(missing.length){reset();status.textContent=`사진 ${missing.length}개를 불러오지 못했습니다. 홈페이지에서 이미지가 보이는지 확인한 후 다시 시도해 주세요.`;return}
+   await document.fonts.ready;
+   const mime=['video/webm;codecs=vp8','video/webm','video/mp4'].find(type=>MediaRecorder.isTypeSupported(type));
+   recorder=new MediaRecorder(stream,{...(mime?{mimeType:mime}:{}),videoBitsPerSecond:6000000});const chunks=[];
+   recorder.ondataavailable=event=>{if(event.data.size)chunks.push(event.data)};
+   recorder.onstop=()=>{const type=recorder.mimeType||'video/webm',blob=new Blob(chunks,{type});reset();if(savedUrl)URL.revokeObjectURL(savedUrl);savedUrl=URL.createObjectURL(blob);download.href=savedUrl;download.download='ONE-NAN-showcase.'+(type.includes('mp4')?'mp4':'webm');download.hidden=false;status.textContent='촬영이 끝났어요. 저장한 영상 파일을 채팅에 첨부하면 GIF와 포트폴리오 이미지를 만들 수 있어요.';download.click()};
+   recorder.onerror=()=>{reset();status.textContent='녹화에 실패했습니다. 다시 시도해 주세요.'};
+   stream.getVideoTracks()[0].addEventListener('ended',()=>{active=false;if(recorder?.state==='recording')recorder.stop()},{once:true});
+   document.documentElement.classList.add('showcase-recording');panel.hidden=true;window.scrollTo({top:0,behavior:'instant'});await delay(300);
+   active=true;recorder.start(1000);await tour();if(recorder.state==='recording')recorder.stop();
+  }catch(error){reset();status.textContent=error.name==='NotAllowedError'?'화면 공유가 취소됐어요. 다시 시작할 수 있습니다.':'녹화를 시작하지 못했습니다. Chrome 또는 Edge에서 다시 시도해 주세요.'}
+ };
+})();
 
 // Shared by the public page and the protected editor.
 const bgm=document.querySelector('#bgm'),bgmPlay=document.querySelector('#bgm-play'),bgmPause=document.querySelector('#bgm-pause'),bgmStop=document.querySelector('#bgm-stop'),bgmTime=document.querySelector('#bgm-time');

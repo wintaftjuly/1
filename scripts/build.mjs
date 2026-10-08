@@ -57,7 +57,7 @@ let publicTemplate = editorTemplate
 const toolbarStart = publicTemplate.indexOf('<div id="copy-toolbar"');
 const cursorStart = publicTemplate.indexOf('<div id="cursor"');
 publicTemplate = publicTemplate.slice(0, toolbarStart) + publicTemplate.slice(cursorStart);
-let reader = `const BUNDLED_CURSORS=${encode(cursors)};\nconst BUNDLED_PORTRAITS=${encode(portraits)};\nconst BUNDLED_ARCHIVE=${encode(JSON.parse(read('archive.json')))};\nconst BUNDLED_COPY=${encode(JSON.parse(read('settings.json')))};\n${publishedLoader}\n${galleryLayout}\n${mediaValidation}\n${read('public.js')}\n${read('audio.js')}\n${read('spine.js')}\n${read('cursor.js')}`;
+let reader = `const BUNDLED_CURSORS=${encode(cursors)};\nconst BUNDLED_PORTRAITS=${encode(portraits)};\nconst BUNDLED_ARCHIVE=${encode(JSON.parse(read('archive.json')))};\nconst BUNDLED_COPY=${encode(JSON.parse(read('settings.json')))};\n${publishedLoader}\n${galleryLayout}\n${mediaValidation}\n${read('public.js')}\n${read('showcase.js')}\n${read('audio.js')}\n${read('spine.js')}\n${read('cursor.js')}`;
 reader = `const BUNDLED_TAPES=${encode(tapes)};\n${reader}`;
 reader = reader.replaceAll('</script', '<\\/script');
 function compile(template, script) {
