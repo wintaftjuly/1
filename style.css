@@ -61,6 +61,10 @@ footer{background:var(--fresh-green);color:var(--dark);border-color:var(--dark)}
 .archive-subtitle{font-size:10.8px}.archive-identity{display:flex;align-items:baseline;gap:12px;margin-top:calc(20px + 1em);line-height:1.5}.archive-identity .archive-subtitle[data-copy=subtitle]{display:inline;margin-top:0;font-weight:800}.archive-social{margin-top:0;font-weight:400;text-decoration:underline;text-underline-offset:3px;transition:opacity .18s ease}.archive-social:hover{opacity:.7}.archive-social:focus-visible{outline:2px solid currentColor;outline-offset:5px}
 @media(max-width:700px){.archive-subtitle{font-size:8.4px}.archive-identity{margin-top:calc(15px + 1em)}}
 
-/* User-supplied Bastliga One, restricted to the archive spine. */
-@font-face{font-family:'Bastliga One';font-style:normal;font-weight:400;font-display:swap;src:url('assets/fonts/BastligaOne-Regular.otf') format('opentype')}
-.archive-spine .spine-line,.archive-spine .spine-line *{font-family:'Bastliga One','Pretendard',sans-serif!important;font-weight:400;font-synthesis:none}
+/* User-supplied Transcity, restricted to the archive spine. */
+@font-face{font-family:'Transcity';font-style:normal;font-weight:400;font-display:swap;src:url('assets/fonts/Transcity-Regular.otf') format('opentype')}
+.archive-spine .spine-line,.archive-spine .spine-line *{font-family:'Transcity','Pretendard',sans-serif!important;font-weight:400;font-synthesis:none}
+
+.card-alt-name{font-size:12px;font-weight:400;letter-spacing:.025em;line-height:1.4;margin-top:3px;color:var(--sheet-ink);opacity:.78;overflow-wrap:anywhere}.card-alt-name+.card-community{margin-top:5px}#detail-alt-name{font-size:14px;letter-spacing:.03em;margin-top:-6px;margin-bottom:14px}
+.intro-bottom{flex-direction:column;align-items:flex-end;gap:8px}.intro-bottom #total{max-width:none}.bgm-player{display:flex;align-items:center;gap:7px;font-size:9px;font-weight:600;color:var(--poster-lime);letter-spacing:.03em}.bgm-player button{display:inline-flex;align-items:center;justify-content:center;background:transparent;color:inherit;border:0;padding:4px;font-size:inherit;line-height:1;min-width:0}.bgm-player button:hover{background:transparent;color:inherit;opacity:.7}.bgm-player button:focus-visible{outline:1px solid currentColor;outline-offset:2px}.bgm-player svg{width:1em;height:1em;fill:currentColor}.bgm-player #bgm-time{padding:0;font:inherit;font-variant-numeric:tabular-nums;white-space:nowrap}.bgm-player button[aria-pressed=true]{opacity:.5}
+@media(max-width:700px){.bgm-player{font-size:7px}.card-alt-name{font-size:10px}}

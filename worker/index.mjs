@@ -1,3 +1,4 @@
+import { isAllowedImage } from '../shared/media.mjs';
 const STATE_KEY = 'published-v1';
 const MAX_BYTES = 24 * 1024 * 1024;
 const COPY_KEYS = ['titleLead','titleAccent','subtitle','spine','characterLabel','seasonLabel','viewStory','managerTitle','footerHandle'];
@@ -28,8 +29,8 @@ export function validateState(data) {
  if (!data || !Array.isArray(data.archive) || data.archive.length > 300 || !data.settings || typeof data.settings !== 'object' || Array.isArray(data.settings)) throw Error('잘못된 게시 자료입니다.');
  const ids = new Set();
  const archive = data.archive.map(row => {
-  if (!row || typeof row.id !== 'string' || !row.id || row.id.length > 100 || ids.has(row.id) || typeof row.name !== 'string' || !row.name.trim() || row.name.length > 80 || typeof row.community !== 'string' || !row.community.trim() || row.community.length > 120 || !Number.isInteger(row.year) || row.year < 1900 || row.year > 2100 || typeof row.note !== 'string' || row.note.length > 2000 || typeof row.image !== 'string' || row.image.length > 2500000 || !(/^assets\/portrait-[1-8]\.svg$/.test(row.image) || /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(row.image))) throw Error('캐릭터 자료 또는 이미지 형식이 올바르지 않습니다.');
-  ids.add(row.id); return {id:row.id,name:row.name.trim(),community:row.community.trim(),year:row.year,note:row.note,image:row.image};
+  if (!row || typeof row.id !== 'string' || !row.id || row.id.length > 100 || ids.has(row.id) || typeof row.name !== 'string' || !row.name.trim() || row.name.length > 80 || typeof row.community !== 'string' || !row.community.trim() || row.community.length > 120 || !Number.isInteger(row.year) || row.year < 1900 || row.year > 2100 || typeof row.note !== 'string' || row.note.length > 2000 || typeof row.image !== 'string' || row.image.length > 2500000 || !isAllowedImage(row.image) || (row.altName !== undefined && (typeof row.altName !== 'string' || row.altName.length > 120))) throw Error('캐릭터 자료 또는 이미지 형식이 올바르지 않습니다.');
+  ids.add(row.id); return {id:row.id,name:row.name.trim(),community:row.community.trim(),year:row.year,note:row.note,image:row.image,altName:(row.altName||'').trim()};
  });
  const settings = {};
  for (const key of COPY_KEYS) { const value = data.settings[key]; if (typeof value !== 'string' || value.length > 600) throw Error('문구 형식이 올바르지 않습니다.'); settings[key] = value; }

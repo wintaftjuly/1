@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import worker,{authenticate} from '../worker/index.mjs';
+import worker,{authenticate,validateState} from '../worker/index.mjs';
 const keys=await crypto.subtle.generateKey({name:'RSASSA-PKCS1-v1_5',modulusLength:2048,publicExponent:new Uint8Array([1,0,1]),hash:'SHA-256'},true,['sign','verify']);
 const jwk=await crypto.subtle.exportKey('jwk',keys.publicKey);jwk.kid='test-key';
 const originalFetch=globalThis.fetch;globalThis.fetch=async url=>{assert.equal(url,'https://archive-test.cloudflareaccess.com/cdn-cgi/access/certs');return Response.json({keys:[jwk]})};
@@ -9,7 +9,7 @@ let stored=null;const env={...base,ARCHIVE_STORE:{get:async()=>stored?JSON.parse
 const b64=value=>Buffer.from(typeof value==='string'?value:JSON.stringify(value)).toString('base64url');
 async function token(overrides={}){const now=Math.floor(Date.now()/1000),parts=b64({alg:'RS256',kid:'test-key'})+'.'+b64({iss:'https://archive-test.cloudflareaccess.com',aud:['editor-audience'],email:'owner@example.com',iat:now,exp:now+60,...overrides});return parts+'.'+Buffer.from(await crypto.subtle.sign('RSASSA-PKCS1-v1_5',keys.privateKey,new TextEncoder().encode(parts))).toString('base64url')}
 const jwt=await token();const headers={'Cf-Access-Jwt-Assertion':jwt,'Origin':'https://admin.example','Content-Type':'application/json'};
-const payload={archive:JSON.parse(fs.readFileSync(new URL('../archive.json',import.meta.url))),settings:JSON.parse(fs.readFileSync(new URL('../settings.json',import.meta.url)))};
+const payload={archive:JSON.parse(fs.readFileSync(new URL('../archive.json',import.meta.url))).map(row=>({...row,altName:''})),settings:JSON.parse(fs.readFileSync(new URL('../settings.json',import.meta.url)))};
 const call=(path,options={},bindings=env)=>worker.fetch(new Request('https://admin.example'+path,options),bindings);
 assert.equal((await call('/')).status,401);
 assert.equal((await call('/',{}, {...env,ACCESS_AUD:''})).status,503);
@@ -19,13 +19,18 @@ assert.equal(await authenticate(new Request('https://admin.example',{headers:{'C
 assert.equal((await call('/',{headers})).status,200);
 assert.equal((await call('/api/publish',{method:'POST',headers,body:JSON.stringify(payload)},{...env,ADMIN_MODE:'false'})).status,403);
 assert.equal((await call('/api/publish',{method:'POST',headers:{...headers,Origin:'https://evil.example'},body:JSON.stringify(payload)})).status,403);
-assert.equal((await call('/api/publish',{method:'POST',headers,body:JSON.stringify({...payload,archive:[{...payload.archive[0],image:'https://evil.example/x'}]})})).status,400);
+assert.equal((await call('/api/publish',{method:'POST',headers,body:JSON.stringify({...payload,archive:[{...payload.archive[0],image:'http://evil.example/x'}]})})).status,400);
 const result=await call('/api/publish',{method:'POST',headers,body:JSON.stringify(payload)});assert.equal(result.status,200);assert((await result.json()).ok);
 assert.deepEqual(await(await call('/archive.json',{}, {...env,ADMIN_MODE:'false'})).json(),payload.archive);
 assert.deepEqual(await(await call('/settings.json',{}, {...env,ADMIN_MODE:'false'})).json(),payload.settings);
-const changed={archive:[{...payload.archive[0],name:'게시 테스트',community:'새 커뮤니티'}],settings:{...payload.settings,titleLead:'바뀐 제목'}};
+for(const image of ['javascript:alert(1)','data:image/svg+xml;base64,PHN2Zz4=','https://user:pass@example.com/image.png'])assert.throws(()=>validateState({...payload,archive:[{...payload.archive[0],image}]}));
+assert.throws(()=>validateState({...payload,archive:[{...payload.archive[0],altName:'a'.repeat(121)}]}));
+assert.equal(validateState({...payload,archive:[{...payload.archive[0],altName:undefined}]}).archive[0].altName,'');
+const changed={archive:[{...payload.archive[0],name:'게시 테스트',community:'새 커뮤니티',altName:'徐怡賢 / Ian Seo',image:'https://images.example.com/portrait.png'}],settings:{...payload.settings,titleLead:'바뀐 제목'}};
 assert.equal((await call('/api/publish',{method:'POST',headers,body:JSON.stringify(changed)})).status,200);
 assert.equal((await(await call('/archive.json',{}, {...env,ADMIN_MODE:'false'})).json())[0].name,'게시 테스트');
+assert.equal((await(await call('/archive.json',{}, {...env,ADMIN_MODE:'false'})).json())[0].altName,'徐怡賢 / Ian Seo');
+assert.equal((await(await call('/archive.json',{}, {...env,ADMIN_MODE:'false'})).json())[0].image,'https://images.example.com/portrait.png');
 assert.equal((await(await call('/settings.json',{}, {...env,ADMIN_MODE:'false'})).json()).titleLead,'바뀐 제목');
 assert.equal((await call('/api/state',{}, {...env,ADMIN_MODE:'false'})).status,404);
 assert.equal((await call('/api/publish',{method:'POST',headers,body:JSON.stringify(changed)},{...env,ARCHIVE_STORE:null})).status,503);

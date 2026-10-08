@@ -1,0 +1,4 @@
+Transcity Regular
+Copyright (c) 2020 by dharmas Std. All rights reserved.
+Original file supplied by site owner: transcity.regular.otf
+Original font embedded without modification. Digits, slash, infinity and em dash are absent and use Pretendard fallback. No license grant is inferred from font metadata.
