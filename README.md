@@ -53,8 +53,10 @@ python3 -m http.server 8000 --bind 0.0.0.0 --directory dist
 
 ## 글꼴과 커서
 
-Spoqa 공식 패키지의 Spoqa Han Sans Neo Regular/Medium/Bold WOFF2를 로컬 보관하고 배포 페이지에 포함합니다. 모든 글자는 이 글꼴을 사용합니다. SIL OFL 라이선스는 `assets/fonts/OFL.txt`에 포함합니다.
+Pretendard 공식 패키지의 Pretendard Variable WOFF2를 로컬 보관하고 배포 페이지에 포함합니다. 모든 글자는 이 글꼴을 사용하며 100–900 굵기를 지원합니다. SIL OFL 라이선스는 `assets/fonts/Pretendard-OFL.txt`에 포함합니다.
 
 커서는 `ful1e5/apple_cursor`의 GPL-3.0 macOS 재현 세트를 사용하며 Apple 공식 구형 OS 원본은 아닙니다. 출처·변환 내용·수정 SVG·라이선스는 `assets/cursors/`에 배포합니다. 기본 화살표, 손가락, I빔, 실제 이미지 처리 중의 회전 커서를 구현했습니다. 포인터를 빠르게 좌우로 흔들면 일시 확대됩니다. 마우스를 즉시 따라가며 터치 화면에는 표시하지 않습니다. 동작 감소 설정에서는 회전과 확대를 생략합니다.
 
 지정된 MEMORIES.psd 장식, 별 아이콘, 스크롤 안내, 파일·컬렉션 라벨, PRIVATE COLLECTION 및 기존 푸터 문장은 제거했습니다. 푸터에는 `@ererwintaft`만 표시합니다. 사진 카드와 hover 모션, 연도 묶음은 유지합니다.
+
+현재 색상은 첨부된 그래픽 레퍼런스를 바탕으로 코럴 레드, 라임, 연분홍, 오프화이트, 차콜을 사용합니다. 제목의 타원과 기울기, 연도 글자의 굵기를 조정했으며 캐릭터 영역의 열 수·사진 크기·간격·padding·hover 전환값은 이전 버전과 데스크톱 및 모바일에서 동일하게 유지했습니다. ARCHIVED WITH AFFECTION / HANDLE WITH CARE와 PERSONAL COLLECTION / EST. IN MEMORIES는 제거했습니다.

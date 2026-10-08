@@ -15,11 +15,8 @@ for (const file of ['cursor-arrow.svg', 'cursor-cross.svg']) {
   const uri = `data:image/svg+xml;base64,${Buffer.from(read(`assets/${file}`)).toString('base64')}`;
   css = css.replaceAll(`assets/${file}`, uri);
 }
-for (const weight of ['Regular', 'Medium', 'Bold']) {
-  const file = `assets/fonts/SpoqaHanSansNeo-${weight}.woff2`;
-  const uri = `data:font/woff2;base64,${readFileSync(resolve(root, file)).toString('base64')}`;
-  css = css.replaceAll(file, uri);
-}
+const fontFile = 'assets/fonts/PretendardVariable.woff2';
+css = css.replaceAll(fontFile, `data:font/woff2;base64,${readFileSync(resolve(root, fontFile)).toString('base64')}`);
 const cursorData = file => `data:image/svg+xml;base64,${Buffer.from(read(file)).toString('base64')}`;
 const cursors = {
   arrow: cursorData('assets/cursors/left_ptr.svg'),
@@ -54,6 +51,6 @@ for (const file of ['index.html', 'archive.json', 'settings.json', '_headers', '
   copyFileSync(resolve(root, file), resolve(output, file));
 }
 mkdirSync(resolve(output, 'assets/fonts'), { recursive: true });
-copyFileSync(resolve(root, 'assets/fonts/OFL.txt'), resolve(output, 'assets/fonts/OFL.txt'));
+copyFileSync(resolve(root, 'assets/fonts/Pretendard-OFL.txt'), resolve(output, 'assets/fonts/Pretendard-OFL.txt'));
 cpSync(resolve(root, 'assets/cursors'), resolve(output, 'assets/cursors'), { recursive: true });
 console.log('Built self-contained index.html and dist/: CSS, JavaScript, sample portraits, cursors, and fallback data are embedded.');
