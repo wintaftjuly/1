@@ -43,14 +43,16 @@ body{background:var(--poster-red)}header{border-bottom:1px solid #25252766}heade
 
 .archive-postype{display:block;width:fit-content;margin-top:8px;text-decoration:underline;text-underline-offset:3px;transition:opacity .18s ease}.archive-postype:hover{opacity:.7}.archive-postype:focus-visible{outline:2px solid currentColor;outline-offset:5px}
 
-/* Fallen Angels palette: dark surfaces, restrained red/lime/green accents.
-   Gallery dimensions, rotations, image filters and motion are unchanged. */
-:root{--jade:#081910;--oxide:#E42217;--cream:#dce9cf;--dark:#081910;--paper:#081910;--ink:#081910;--muted:#98b494;--line:#34CD3F44;--accent:#A9ED3D;--poster-red:#E42217;--poster-pink:#102c1a;--poster-lime:#A9ED3D;--fresh-green:#34CD3F}
-body{background:var(--dark)}header{border-bottom-color:#34CD3F44}header,.header-actions .text-button,.header-actions .text-button:hover{color:var(--poster-lime)}.archive-spine{background:var(--dark);color:var(--fresh-green);border-right-color:#34CD3F44}
-.intro h1{color:var(--fresh-green)}.intro h1 [data-copy=titleAccent]{background:var(--poster-lime);color:var(--dark)}.intro-bottom>span:last-child{color:var(--cream);border-block-color:#34CD3F66}
-.archive-subtitle{color:var(--cream)}.archive-subtitle[data-copy=subtitle]{display:block;margin-top:calc(20px + 1em);font-weight:800}.archive-postype{font-weight:400;color:#98b494}
-#years{background:var(--dark);border-color:#34CD3F44}#years a{background:var(--dark);color:var(--fresh-green);border-color:#34CD3F66}#years a:hover,#years a.active{background:var(--poster-red);color:var(--cream);border-color:var(--poster-red)}
-.year-section,.year-section:nth-child(3n){background-color:var(--dark);color:var(--cream);border-color:#34CD3F44;box-shadow:none}.year-section:nth-child(3n+2){background-color:#102c1a;color:var(--cream);border-color:#34CD3F44}.year-title h2,.year-section:nth-child(3n+2) .year-title h2,.year-section:nth-child(3n) .year-title h2{color:var(--poster-lime)}.year-heading,.year-caption{border-color:#34CD3F44}.year-caption{color:#98b494}
-.card,.card:hover,.card:focus-visible{background:#0d2416;color:var(--cream);border-color:#34CD3F66}.card-name{color:var(--cream)}.card-community,.card-num{color:#98b494}.portrait:after{background:var(--poster-lime);color:var(--dark);box-shadow:2px 2px 0 var(--poster-red)}
-footer{background:var(--dark);color:var(--fresh-green);border-color:#34CD3F44}.archive-postype{text-decoration-color:var(--poster-red)}
+/* Reference color blocks and foreground pairings. Gallery geometry and motion stay intact. */
+:root{--jade:#E42217;--oxide:#E42217;--cream:#A9ED3D;--dark:#081910;--paper:#A9ED3D;--ink:#081910;--muted:#081910;--line:#08191066;--accent:#A9ED3D;--poster-red:#E42217;--poster-pink:#34CD3F;--poster-lime:#A9ED3D;--fresh-green:#34CD3F}
+body{background:var(--poster-red)}header{border-bottom-color:var(--poster-lime)}header,.header-actions .text-button,.header-actions .text-button:hover{color:var(--poster-lime)}.archive-spine{background:var(--dark);color:var(--poster-lime);border-right-color:var(--fresh-green)}
+.intro h1{color:var(--poster-lime)}.intro h1 [data-copy=titleAccent]{background:var(--dark);color:var(--poster-lime)}.intro-bottom>span:last-child{color:var(--poster-lime);border-block-color:var(--poster-lime)}
+.archive-subtitle{color:var(--poster-lime)}.archive-subtitle[data-copy=subtitle]{display:block;margin-top:calc(20px + 1em);font-weight:800}.archive-postype{font-weight:400;color:var(--poster-lime);text-decoration-color:var(--poster-lime)}
+#years{background:var(--poster-red);border-color:var(--dark)}#years a{background:var(--fresh-green);color:var(--dark);border-color:var(--dark)}#years a:hover,#years a.active{background:var(--dark);color:var(--poster-lime);border-color:var(--dark)}
+.year-section{--sheet:var(--poster-lime);--sheet-ink:var(--dark);--sheet-title:var(--poster-red);--sheet-line:#E4221766;background-color:var(--sheet);color:var(--sheet-ink);border-color:var(--sheet-line);box-shadow:none}
+.year-section:nth-child(3n+2){--sheet:var(--fresh-green);--sheet-ink:var(--dark);--sheet-title:var(--dark);--sheet-line:#08191066;background-color:var(--sheet);color:var(--sheet-ink)}
+.year-section:nth-child(3n){--sheet:var(--dark);--sheet-ink:var(--poster-lime);--sheet-title:var(--fresh-green);--sheet-line:#34CD3F66;background-color:var(--sheet);color:var(--sheet-ink)}
+.year-title h2,.year-section:nth-child(3n+2) .year-title h2,.year-section:nth-child(3n) .year-title h2{color:var(--sheet-title)}.year-heading,.year-caption{border-color:var(--sheet-line)}.year-caption{color:var(--sheet-ink)}
+.card,.card:hover,.card:focus-visible{background:var(--sheet);color:var(--sheet-ink);border-color:var(--sheet-line)}.card-name,.card-community,.card-num{color:var(--sheet-ink)}.portrait:after{background:var(--dark);color:var(--poster-lime);box-shadow:2px 2px 0 var(--poster-red)}
+footer{background:var(--fresh-green);color:var(--dark);border-color:var(--dark)}
 @media(max-width:700px){.archive-subtitle[data-copy=subtitle]{margin-top:calc(15px + 1em)}}
