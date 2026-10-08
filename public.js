@@ -22,6 +22,7 @@ function validateCopy(data) {
   next[key] = value;
  }
  if (/^VIEW STORY/i.test(next.viewStory)) next.viewStory = '더보기';
+ if (next.subtitle.trim() === 'THE CHARACTER FILES') next.subtitle = 'ONE NAN';
  return next;
 }
 function applyCopy() {
