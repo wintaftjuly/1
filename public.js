@@ -86,4 +86,9 @@ async function refreshPublishedData() {
  })();
  return refreshInFlight;
 }
-refreshPublishedData();
+try{
+ const embedded=$('#published-state');
+ if(!embedded)throw Error('No bootstrap');
+ const state=JSON.parse(embedded.textContent),nextRecords=validateRecords(state.archive),nextCopy=validateCopy(state.settings);
+ records=nextRecords;siteCopy=nextCopy;render();document.documentElement.classList.remove('archive-loading','copy-pending');
+}catch{refreshPublishedData();}

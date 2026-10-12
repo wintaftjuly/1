@@ -4,6 +4,11 @@ const MAX_BYTES = 24 * 1024 * 1024;
 const COPY_KEYS = ['titleLead','titleAccent','subtitle','spine','characterLabel','seasonLabel','viewStory','managerTitle','footerHandle'];
 const json = (body, status=200) => new Response(JSON.stringify(body), {status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 let certCache;
+function publicState(state,origin){
+ const archive=typeof state.version==='string'&&/^[a-zA-Z0-9-]{1,100}$/.test(state.version)
+  ?state.archive.map((row,index)=>({...row,image:row.image.startsWith('data:image/')?origin+'/published-images/'+state.version+'/'+index:row.image})):state.archive;
+ return{archive,settings:state.settings};
+}
 function decode(value) { return Uint8Array.from(atob(value.replaceAll('-','+').replaceAll('_','/')), c => c.charCodeAt(0)); }
 export async function authenticate(request, env) {
  const team = env.ACCESS_TEAM_DOMAIN, audience = env.ACCESS_AUD;
@@ -86,9 +91,7 @@ export default {
     const state = env.ARCHIVE_STORE ? await env.ARCHIVE_STORE.get(STATE_KEY,'json') : null;
     if (url.pathname === '/api/state') return json({configured:!!env.ARCHIVE_STORE,state});
     if (state) {
-     const archive=!admin && typeof state.version==='string' && /^[a-zA-Z0-9-]{1,100}$/.test(state.version)
-      ?state.archive.map((row,index)=>({...row,image:row.image.startsWith('data:image/')?url.origin+'/published-images/'+state.version+'/'+index:row.image}))
-      :state.archive;
+     const archive=!admin?publicState(state,url.origin).archive:state.archive;
      if(url.pathname==='/public-state.json') return json({archive,settings:state.settings});
      return json(url.pathname === '/archive.json'?archive:state.settings);
     }
@@ -99,6 +102,21 @@ export default {
    } catch {return json({error:'공개 자료를 읽지 못했습니다.'},503)}
   }
   if (url.pathname.startsWith('/api/')) return json({error:'Not found'},404);
+  if(!admin&&['/','/index.html'].includes(url.pathname)&&request.method==='GET'&&env.ARCHIVE_STORE){
+   try{
+    const state=await env.ARCHIVE_STORE.get(STATE_KEY,'json');
+    if(state){
+     const response=await env.ASSETS.fetch(request);
+     if(response.ok&&response.headers.get('Content-Type')?.includes('text/html')){
+      const encoded=JSON.stringify(publicState(state,url.origin)).replaceAll('<','\\u003c').replaceAll('\u2028','\\u2028').replaceAll('\u2029','\\u2029');
+      const html=new HTMLRewriter().on('head',{element(head){head.append('<script type="application/json" id="published-state">'+encoded+'</script>',{html:true});}}).transform(response);
+      const headers=new Headers(html.headers);headers.set('Cache-Control','no-store');
+      return new Response(html.body,{status:html.status,headers});
+     }
+     return response;
+    }
+   }catch{/* The client can retry the metadata endpoint if storage is unavailable. */}
+  }
   return env.ASSETS.fetch(request);
  }
 };
