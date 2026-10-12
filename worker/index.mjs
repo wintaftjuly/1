@@ -62,12 +62,31 @@ export default {
    } catch (error) {return json({error:error instanceof SyntaxError?'자료 형식이 올바르지 않습니다.':error.message || '게시하지 못했습니다.'},400)}
   }
   if (url.pathname === '/api/state' && !admin) return json({error:'Not found'},404);
+  // Keep embedded photos out of the public list so metadata can render first.
+  if (url.pathname.startsWith('/published-images/')) {
+   if (!['GET','HEAD'].includes(request.method)) return json({error:'Method not allowed'},405);
+   const match=url.pathname.match(/^\/published-images\/([a-zA-Z0-9-]{1,100})\/(0|[1-9]\d*)$/);
+   if (!match) return json({error:'Not found'},404);
+   try {
+    const state=env.ARCHIVE_STORE?await env.ARCHIVE_STORE.get(STATE_KEY,'json'):null;
+    const image=state?.version===match[1]?state.archive?.[Number(match[2])]?.image:null;
+    const data=typeof image==='string'?image.match(/^data:(image\/(?:png|jpeg|webp));base64,([A-Za-z0-9+/=]+)$/):null;
+    if (!data) return json({error:'Not found'},404);
+    const bytes=Uint8Array.from(atob(data[2]),c=>c.charCodeAt(0));
+    return new Response(request.method==='HEAD'?null:bytes,{headers:{'Content-Type':data[1],'Cache-Control':'public, max-age=3600','X-Content-Type-Options':'nosniff'}});
+   } catch {return json({error:'이미지를 읽지 못했습니다.'},503)}
+  }
   if (['/archive.json','/settings.json','/api/state'].includes(url.pathname)) {
    if (!['GET','HEAD'].includes(request.method)) return json({error:'Method not allowed'},405);
    try {
     const state = env.ARCHIVE_STORE ? await env.ARCHIVE_STORE.get(STATE_KEY,'json') : null;
     if (url.pathname === '/api/state') return json({configured:!!env.ARCHIVE_STORE,state});
-    if (state) return json(url.pathname === '/archive.json'?state.archive:state.settings);
+    if (state) {
+     const archive=!admin && typeof state.version==='string' && /^[a-zA-Z0-9-]{1,100}$/.test(state.version)
+      ?state.archive.map((row,index)=>({...row,image:row.image.startsWith('data:image/')?url.origin+'/published-images/'+state.version+'/'+index:row.image}))
+      :state.archive;
+     return json(url.pathname === '/archive.json'?archive:state.settings);
+    }
    } catch {return json({error:'공개 자료를 읽지 못했습니다.'},503)}
   }
   if (url.pathname.startsWith('/api/')) return json({error:'Not found'},404);
