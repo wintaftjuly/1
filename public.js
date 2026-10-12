@@ -10,7 +10,7 @@ function validateRecords(data) {
   if (!row || typeof row.name !== 'string' || !row.name.trim() || row.name.length > 80 || typeof row.community !== 'string' || !row.community.trim() || row.community.length > 120 || !Number.isInteger(row.year) || row.year < 1900 || row.year > 2100 || !validImage(row.image) || row.image.length > 2500000 || typeof row.note !== 'string' || row.note.length > 2000 || (row.altName !== undefined && (typeof row.altName !== 'string' || row.altName.length > 120))) throw Error('Invalid character');
   const id = typeof row.id === 'string' && row.id.length < 100 ? row.id : 'character-' + index;
   if (ids.has(id)) throw Error('Duplicate character'); ids.add(id);
-  return {id, name: row.name, community: row.community, year: row.year, image: row.image, detailImage:validImage(row.detailImage)?row.detailImage:row.image, note: row.note, altName: (row.altName || '').trim()};
+  return {id, name: row.name, community: row.community, year: row.year, image: row.image, thumbnailImage:validImage(row.thumbnailImage)?row.thumbnailImage:'', detailImage:validImage(row.detailImage)?row.detailImage:row.image, note: row.note, altName: (row.altName || '').trim()};
  });
 }
 function validateCopy(data) {
@@ -50,7 +50,8 @@ function render() {
   group.forEach((row,index) => {
    const card = el('button','card'); applyCardAngle(card,row.id);applyCardTape(card,row.id); card.setAttribute('aria-label',row.name+' · '+row.community+' · '+year+'년 상세 보기');
    const portrait = el('div','portrait'); portrait.dataset.viewStory = siteCopy.viewStory;
-   const image = el('img');image.loading=photoIndex<4?'eager':'lazy';image.fetchPriority=photoIndex<4?'high':'auto';image.decoding='async';photoIndex++;image.src = BUNDLED_PORTRAITS[row.image] || row.image; image.alt = row.name+'의 초상'; portrait.append(image);
+   const image = el('img');image.loading=photoIndex<4?'eager':'lazy';image.fetchPriority=photoIndex<4?'high':'auto';image.decoding='async';photoIndex++;image.src = BUNDLED_PORTRAITS[row.image] || row.image; image.alt = row.name+'의 초상';
+   if(row.thumbnailImage){const picture=el('picture'),source=el('source');source.media='(max-width: 600px)';source.srcset=row.thumbnailImage;picture.append(source,image);portrait.append(picture);}else portrait.append(image);
    const meta = el('div','card-meta'); meta.append(el('span','card-name',row.name),el('span','card-num',String(index+1).padStart(2,'0')));
    card.append(portrait,meta); card.append(el('div','card-community',row.community)); card.onclick = () => showDetail(row.id); grid.append(card);
   });

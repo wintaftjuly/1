@@ -1,5 +1,5 @@
 import { isAllowedImage } from '../shared/media.mjs';
-import { STATIC_IMAGES, STATIC_IMAGE_DETAILS } from '../shared/static-images.mjs';
+import { STATIC_IMAGES, STATIC_IMAGE_DETAILS, STATIC_IMAGE_THUMBNAILS } from '../shared/static-images.mjs';
 import { INITIAL_PUBLIC_STATE } from '../shared/initial-public-state.mjs';
 const STATE_KEY = 'published-v1';
 const PUBLIC_KEY = 'published-public-v2';
@@ -19,7 +19,7 @@ function readPublicState(store,key=STATE_KEY){
 function publicState(state,origin){
  const archive=typeof state.version==='string'&&/^[a-zA-Z0-9-]{1,100}$/.test(state.version)
   ?state.archive.map((row,index)=>({...row,image:row.image.startsWith('data:image/')?origin+'/published-images/'+state.version+'/'+index:row.image.startsWith('/published-images/')?origin+row.image:row.image})):state.archive;
- return{archive:archive.map(row=>{const url=new URL(row.image,origin);const key=url.origin===origin?url.pathname:row.image;const file=STATIC_IMAGES[key];return file?{...row,image:origin+'/'+file,...(STATIC_IMAGE_DETAILS[file]?{detailImage:origin+'/'+STATIC_IMAGE_DETAILS[file]}:{})}:row;}),settings:state.settings};
+ return{archive:archive.map(row=>{const url=new URL(row.image,origin);const key=url.origin===origin?url.pathname:row.image;const file=STATIC_IMAGES[key];return file?{...row,image:origin+'/'+file,...(STATIC_IMAGE_DETAILS[file]?{detailImage:origin+'/'+STATIC_IMAGE_DETAILS[file]}:{}),...(STATIC_IMAGE_THUMBNAILS[file]?{thumbnailImage:origin+'/'+STATIC_IMAGE_THUMBNAILS[file]}:{})}:row;}),settings:state.settings};
 }
 export async function writePublicFiles(store,state){
  const archive=[];
@@ -41,7 +41,7 @@ function imageResponse(image){
 async function readPublicMetadata(env,origin,ctx){
  if(!env.ARCHIVE_STORE)return null;
  const cache=typeof caches!=='undefined'?caches.default:null;
- const key=new Request(origin+'/__archive_metadata_v3');
+ const key=new Request(origin+'/__archive_metadata_v4');
  const hit=cache?await cache.match(key).catch(()=>null):null;
  if(hit)return hit.json();
  const compact=await readPublicState(env.ARCHIVE_STORE,PUBLIC_KEY);
@@ -173,14 +173,20 @@ export default {
   if (url.pathname.startsWith('/api/')) return json({error:'Not found'},404);
   if(!admin&&['/','/index.html'].includes(url.pathname)&&request.method==='GET'&&env.ARCHIVE_STORE){
    try{
+    const pageCache=typeof caches!=='undefined'?caches.default:null;
+    const pageKey=new Request(url.origin+'/__archive_page_v1'+url.pathname);
+    const cachedPage=pageCache?await pageCache.match(pageKey).catch(()=>null):null;
+    if(cachedPage){const headers=new Headers(cachedPage.headers);headers.set('Cache-Control','no-store');headers.set('X-Archive-Page-Cache','HIT');return new Response(cachedPage.body,{headers});}
     const state=await readPublicMetadata(env,url.origin,ctx);
     if(state){
      const response=await env.ASSETS.fetch(request);
      if(response.ok&&response.headers.get('Content-Type')?.includes('text/html')){
       const encoded=JSON.stringify(publicState(state,url.origin)).replaceAll('<','\\u003c').replaceAll('\u2028','\\u2028').replaceAll('\u2029','\\u2029');
       const html=new HTMLRewriter().on('head',{element(head){head.append('<script type="application/json" id="published-state">'+encoded+'</script>',{html:true});}}).transform(response);
-      const headers=new Headers(html.headers);headers.set('Cache-Control','no-store');
-      return new Response(html.body,{status:html.status,headers});
+      const headers=new Headers(html.headers);headers.set('Cache-Control','no-store');headers.set('X-Archive-Page-Cache','MISS');
+      const result=new Response(html.body,{status:html.status,headers});
+      if(pageCache&&ctx?.waitUntil){const cached=result.clone();const cacheHeaders=new Headers(cached.headers);cacheHeaders.set('Cache-Control','public, max-age=30');ctx.waitUntil(pageCache.put(pageKey,new Response(cached.body,{headers:cacheHeaders})).catch(()=>{}));}
+      return result;
      }
      return response;
     }
