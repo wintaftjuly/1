@@ -5,6 +5,12 @@ import { resolve } from 'node:path';
 const root = fileURLToPath(new URL('../', import.meta.url));
 // HTML parsing normalizes CRLF; CSP hashes must use the same LF source.
 const read = file => readFileSync(resolve(root, file), 'utf8').replace(/\r\n?/g, '\n');
+// Reassemble large media from bounded source chunks and verify byte integrity.
+for(const asset of JSON.parse(read('assets/packed/manifest.json'))){
+ const bytes=Buffer.concat(asset.parts.map(part=>readFileSync(resolve(root,part))));
+ if(createHash('sha256').update(bytes).digest('hex')!==asset.sha256)throw Error('Media integrity check failed: '+asset.target);
+ mkdirSync(resolve(root,asset.target,'..'),{recursive:true});writeFileSync(resolve(root,asset.target),bytes);
+}
 const encode = value => JSON.stringify(value).replaceAll('<', '\\u003c').replaceAll('\u2028', '\\u2028').replaceAll('\u2029', '\\u2029');
 const portraits = {};
 for (let i = 1; i <= 8; i++) {
@@ -60,7 +66,7 @@ const editorTemplate = read('src/index.html');
 const publicCopy = {...JSON.parse(read('settings.json')),titleLead:'',titleAccent:'',managerTitle:''};
 let publicTemplate = editorTemplate
  .replace(/(<(?:span|em) data-copy="(?:titleLead|titleAccent)">)[^<]*/g,'$1')
- .replace('assets/audio/bgm.mp3',assetUrl('assets/audio/bgm.mp3'))
+ .replace('assets/audio/bgm.mp3',assetUrl('assets/audio/bgm-stream.mp3'))
  .replace('class="copy-loading"', 'class="archive-loading copy-pending"')
  .replace('autoplay loop preload="metadata"','data-defer-boot="true" loop preload="none"')
  .replace('<div id="archive"></div>', '<p id="archive-loading" role="status">아카이브를 불러오는 중…</p><div id="archive"></div>')
@@ -80,7 +86,7 @@ function compile(template, script, compiledCss=css) {
   .replace('href="favicon.svg"', `href="${favicon}"`)
   .replace(/<script src="[^"]+" defer><\/script>/, '')
   .replace('</body>', `<script>${script}</script></body>`);
- const headers = `/*\n  Content-Security-Policy: ${csp}\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n` + [...externalAssets.values()].map(file=>`/${file}\n  Cache-Control: public, max-age=31536000, immutable\n`).join('');
+ const headers = `/*\n  Content-Security-Policy: ${csp}\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n/assets/published/*\n  Cache-Control: public, max-age=31536000, immutable\n` + [...externalAssets.values()].map(file=>`/${file}\n  Cache-Control: public, max-age=31536000, immutable\n`).join('');
  return {html,headers};
 }
 function outputDirectory(name, bundle) {
@@ -94,6 +100,7 @@ function outputDirectory(name, bundle) {
  for (const file of ['NotoSerifTC-OFL.txt','NotoSerifKR-OFL.txt','TitleFont-SOURCE.txt','Favicon-SOURCE.txt']) copyFileSync(resolve(root,'assets/fonts/'+file),resolve(output,'assets/fonts/'+file));
  cpSync(resolve(root,'assets/audio'),resolve(output,'assets/audio'),{recursive:true});
  cpSync(resolve(root,'assets/cursors'),resolve(output,'assets/cursors'),{recursive:true});
+ cpSync(resolve(root,'assets/published'),resolve(output,'assets/published'),{recursive:true});
 }
 const publicCss=css.replace(/@font-face\{font-family:'Pretendard'[^}]*\}/g,face=>`@media not all and (pointer:coarse){${face}}`);
 const publicBundle = compile(publicTemplate, reader,publicCss), editorBundle = compile(editorTemplate, app);

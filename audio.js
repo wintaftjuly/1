@@ -12,4 +12,5 @@ bgm.addEventListener('error',()=>{awaitingMusicGesture=true;bgmTime.textContent=
 function unlockMusic(event){if(awaitingMusicGesture&&!event.target.closest('.bgm-player'))playMusic()}
 document.addEventListener('pointerdown',unlockMusic);document.addEventListener('keydown',unlockMusic);
 updateMusic();
-if(bgm.dataset.deferBoot==='true'){awaitingMusicGesture=true;window.addEventListener('load',()=>{if(musicAutostartPending)playMusic();},{once:true});}else playMusic();
+// Media playback must not wait for every image (including offscreen animations).
+if(bgm.dataset.deferBoot==='true'){awaitingMusicGesture=true;setTimeout(()=>{if(musicAutostartPending)playMusic();},0);}else playMusic();

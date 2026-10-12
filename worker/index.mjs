@@ -1,5 +1,7 @@
 import { isAllowedImage } from '../shared/media.mjs';
+import { STATIC_IMAGES, STATIC_IMAGE_DETAILS } from '../shared/static-images.mjs';
 const STATE_KEY = 'published-v1';
+const PUBLIC_KEY = 'published-public-v2';
 const MAX_BYTES = 24 * 1024 * 1024;
 const COPY_KEYS = ['titleLead','titleAccent','subtitle','spine','characterLabel','seasonLabel','viewStory','managerTitle','footerHandle'];
 const json = (body, status=200) => new Response(JSON.stringify(body), {status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
@@ -15,8 +17,18 @@ function readPublicState(store,key=STATE_KEY){
 }
 function publicState(state,origin){
  const archive=typeof state.version==='string'&&/^[a-zA-Z0-9-]{1,100}$/.test(state.version)
-  ?state.archive.map((row,index)=>({...row,image:row.image.startsWith('data:image/')?origin+'/published-images/'+state.version+'/'+index:row.image})):state.archive;
- return{archive,settings:state.settings};
+  ?state.archive.map((row,index)=>({...row,image:row.image.startsWith('data:image/')?origin+'/published-images/'+state.version+'/'+index:row.image.startsWith('/published-images/')?origin+row.image:row.image})):state.archive;
+ return{archive:archive.map(row=>{const url=new URL(row.image,origin);const key=url.origin===origin?url.pathname:row.image;const file=STATIC_IMAGES[key];return file?{...row,image:origin+'/'+file,...(STATIC_IMAGE_DETAILS[file]?{detailImage:origin+'/'+STATIC_IMAGE_DETAILS[file]}:{})}:row;}),settings:state.settings};
+}
+export async function writePublicFiles(store,state){
+ const archive=[];
+ // Immutable versioned files are written before the public manifest switches.
+ for(let index=0;index<state.archive.length;index++){
+  const row=state.archive[index],response=imageResponse(row.image);
+  if(response){await store.put('published-file:'+state.version+':'+index,await response.arrayBuffer(),{metadata:{contentType:response.headers.get('Content-Type')}});}
+  archive.push({...row,image:response?'/published-images/'+state.version+'/'+index:row.image});
+ }
+ return {archive,settings:state.settings,version:state.version,publishedAt:state.publishedAt};
 }
 function imageResponse(image){
  const data=typeof image==='string'?image.match(/^data:(image\/(?:png|jpeg|webp));base64,([A-Za-z0-9+/=]+)$/):null;
@@ -27,10 +39,11 @@ function imageResponse(image){
 }
 async function readPublicMetadata(env,origin,ctx){
  const cache=typeof caches!=='undefined'?caches.default:null;
- const key=new Request(origin+'/__archive_metadata_v2');
+ const key=new Request(origin+'/__archive_metadata_v3');
  const hit=cache?await cache.match(key).catch(()=>null):null;
  if(hit)return hit.json();
- const state=await readPublicState(env.ARCHIVE_STORE);
+ const compact=await readPublicState(env.ARCHIVE_STORE,PUBLIC_KEY);
+ const state=compact||await readPublicState(env.ARCHIVE_STORE);
  if(!state)return null;
  const metadata=publicState(state,origin);
  if(cache&&ctx?.waitUntil){
@@ -100,7 +113,9 @@ export default {
     state.publishedAt=new Date().toISOString();state.version=crypto.randomUUID();
     const previous=await env.ARCHIVE_STORE.get(STATE_KEY,'json');
     if(previous?.version) await env.ARCHIVE_STORE.put('published-snapshot:'+previous.version,JSON.stringify(previous),{expirationTtl:604800});
+    const compact=await writePublicFiles(env.ARCHIVE_STORE,state);
     await env.ARCHIVE_STORE.put(STATE_KEY,JSON.stringify(state));
+    await env.ARCHIVE_STORE.put(PUBLIC_KEY,JSON.stringify(compact));
     publicReadCache.delete(env.ARCHIVE_STORE);
     return json({ok:true,publishedAt:state.publishedAt,version:state.version});
    } catch (error) {return json({error:error instanceof SyntaxError?'자료 형식이 올바르지 않습니다.':error.message || '게시하지 못했습니다.'},400)}
@@ -112,10 +127,20 @@ export default {
    const match=url.pathname.match(/^\/published-images\/([a-zA-Z0-9-]{1,100})\/(0|[1-9]\d*)$/);
    if (!match) return json({error:'Not found'},404);
    try {
+    if(STATIC_IMAGES[url.pathname])return env.ASSETS.fetch(new Request(url.origin+'/'+STATIC_IMAGES[url.pathname],request));
     const cache=!admin&&typeof caches!=='undefined'?caches.default:null;
     const cacheUrl=new URL(url);cacheUrl.search='';const cacheKey=new Request(cacheUrl,{method:'GET'});
     const hit=cache?await cache.match(cacheKey).catch(()=>null):null;
     if(hit){const headers=new Headers(hit.headers);headers.set('X-Archive-Cache','HIT');return new Response(request.method==='HEAD'?null:hit.body,{status:hit.status,headers});}
+    if(env.ARCHIVE_STORE?.getWithMetadata){
+     const file=await env.ARCHIVE_STORE.getWithMetadata('published-file:'+match[1]+':'+match[2],request.method==='HEAD'?'stream':'arrayBuffer');
+     if(file.value){
+      if(request.method==='HEAD')file.value.cancel?.().catch(()=>{});
+      const response=new Response(request.method==='HEAD'?null:file.value,{headers:{'Content-Type':file.metadata?.contentType||'application/octet-stream','Cache-Control':'public, max-age=31536000, immutable','X-Content-Type-Options':'nosniff','X-Archive-Storage':'file','X-Archive-Cache':cache?'MISS':'BYPASS'}});
+      if(cache&&request.method==='GET'){const pending=cache.put(cacheKey,response.clone()).catch(()=>{});if(ctx?.waitUntil)ctx.waitUntil(pending);else await pending;}
+      return response;
+     }
+    }
     let state=await readPublicState(env.ARCHIVE_STORE);
     if(state && state.version!==match[1]) state=await readPublicState(env.ARCHIVE_STORE,'published-snapshot:'+match[1]);
     const image=state?.version===match[1]?state.archive?.[Number(match[2])]?.image:null;

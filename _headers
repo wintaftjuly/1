@@ -1,8 +1,10 @@
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-ObdWQVYodH70TXCwQ+NYCVaV2hfXnNdv/6ak+D8o8P4='; style-src 'self' 'sha256-9KU++8jkdpAaQ7qe9pW0DrmfSOJXkysu6nzUMtC9uyw='; img-src 'self' data: https:; media-src 'self'; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-yu6AgkpAfqHtP9tmXiXGbX63Mv68UOViLoCu8Qekogk='; style-src 'self' 'sha256-9KU++8jkdpAaQ7qe9pW0DrmfSOJXkysu6nzUMtC9uyw='; img-src 'self' data: https:; media-src 'self'; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'
   X-Content-Type-Options: nosniff
   Referrer-Policy: no-referrer
   Permissions-Policy: camera=(), microphone=(), geolocation=()
+/assets/published/*
+  Cache-Control: public, max-age=31536000, immutable
 /assets/fonts/PretendardVariable.9599f12fd42fc0bc.woff2
   Cache-Control: public, max-age=31536000, immutable
 /assets/fonts/Transcity-Regular.2d380619bbd1103f.otf
@@ -17,5 +19,5 @@
   Cache-Control: public, max-age=31536000, immutable
 /assets/tapes/tape-5.ca410c8d9d22b221.png
   Cache-Control: public, max-age=31536000, immutable
-/assets/audio/bgm.58786e5633e5f85e.mp3
+/assets/audio/bgm-stream.ed86b81c9ed23dee.mp3
   Cache-Control: public, max-age=31536000, immutable

@@ -10,7 +10,7 @@ function validateRecords(data) {
   if (!row || typeof row.name !== 'string' || !row.name.trim() || row.name.length > 80 || typeof row.community !== 'string' || !row.community.trim() || row.community.length > 120 || !Number.isInteger(row.year) || row.year < 1900 || row.year > 2100 || !validImage(row.image) || row.image.length > 2500000 || typeof row.note !== 'string' || row.note.length > 2000 || (row.altName !== undefined && (typeof row.altName !== 'string' || row.altName.length > 120))) throw Error('Invalid character');
   const id = typeof row.id === 'string' && row.id.length < 100 ? row.id : 'character-' + index;
   if (ids.has(id)) throw Error('Duplicate character'); ids.add(id);
-  return {id, name: row.name, community: row.community, year: row.year, image: row.image, note: row.note, altName: (row.altName || '').trim()};
+  return {id, name: row.name, community: row.community, year: row.year, image: row.image, detailImage:validImage(row.detailImage)?row.detailImage:row.image, note: row.note, altName: (row.altName || '').trim()};
  });
 }
 function validateCopy(data) {
@@ -33,7 +33,7 @@ function applyCopy() {
 }
 function showDetail(id) {
  const row = records.find(record => record.id === id); if (!row) return;
- $('#detail-image').src = BUNDLED_PORTRAITS[row.image] || row.image; $('#detail-image').alt = row.name;
+ $('#detail-image').src = BUNDLED_PORTRAITS[row.detailImage] || row.detailImage || row.image; $('#detail-image').alt = row.name;
  $('#detail-name').textContent = row.name; $('#detail-alt-name').textContent = row.altName || ''; $('#detail-alt-name').hidden = !row.altName; $('#detail-year').textContent = row.year + ' / CHARACTER ARCHIVE';
  $('#detail-community').textContent = row.community; $('#detail-note').textContent = row.note;
  $('#detail').showModal();
