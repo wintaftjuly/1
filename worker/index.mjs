@@ -1,5 +1,6 @@
 import { isAllowedImage } from '../shared/media.mjs';
 import { STATIC_IMAGES, STATIC_IMAGE_DETAILS } from '../shared/static-images.mjs';
+import { INITIAL_PUBLIC_STATE } from '../shared/initial-public-state.mjs';
 const STATE_KEY = 'published-v1';
 const PUBLIC_KEY = 'published-public-v2';
 const MAX_BYTES = 24 * 1024 * 1024;
@@ -38,12 +39,15 @@ function imageResponse(image){
  return new Response(bytes,{headers:{'Content-Type':data[1],'Cache-Control':'public, max-age=604800, immutable','X-Content-Type-Options':'nosniff','X-Archive-Cache':'MISS'}});
 }
 async function readPublicMetadata(env,origin,ctx){
+ if(!env.ARCHIVE_STORE)return null;
  const cache=typeof caches!=='undefined'?caches.default:null;
  const key=new Request(origin+'/__archive_metadata_v3');
  const hit=cache?await cache.match(key).catch(()=>null):null;
  if(hit)return hit.json();
  const compact=await readPublicState(env.ARCHIVE_STORE,PUBLIC_KEY);
- const state=compact||await readPublicState(env.ARCHIVE_STORE);
+ // Existing published content has a compact bootstrap too. Future publishes
+ // replace it via PUBLIC_KEY, so no public page needs the large editor backup.
+ const state=compact||INITIAL_PUBLIC_STATE;
  if(!state)return null;
  const metadata=publicState(state,origin);
  if(cache&&ctx?.waitUntil){
