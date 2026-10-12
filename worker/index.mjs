@@ -57,6 +57,8 @@ export default {
     const bytes=new Uint8Array(length);let offset=0;for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.length}
     const state=validateState(JSON.parse(new TextDecoder().decode(bytes)));
     state.publishedAt=new Date().toISOString();state.version=crypto.randomUUID();
+    const previous=await env.ARCHIVE_STORE.get(STATE_KEY,'json');
+    if(previous?.version) await env.ARCHIVE_STORE.put('published-snapshot:'+previous.version,JSON.stringify(previous),{expirationTtl:604800});
     await env.ARCHIVE_STORE.put(STATE_KEY,JSON.stringify(state));
     return json({ok:true,publishedAt:state.publishedAt,version:state.version});
    } catch (error) {return json({error:error instanceof SyntaxError?'자료 형식이 올바르지 않습니다.':error.message || '게시하지 못했습니다.'},400)}
@@ -68,15 +70,17 @@ export default {
    const match=url.pathname.match(/^\/published-images\/([a-zA-Z0-9-]{1,100})\/(0|[1-9]\d*)$/);
    if (!match) return json({error:'Not found'},404);
    try {
-    const state=env.ARCHIVE_STORE?await env.ARCHIVE_STORE.get(STATE_KEY,'json'):null;
+    let state=env.ARCHIVE_STORE?await env.ARCHIVE_STORE.get(STATE_KEY,'json'):null;
+    if(state && state.version!==match[1]) state=await env.ARCHIVE_STORE.get('published-snapshot:'+match[1],'json');
     const image=state?.version===match[1]?state.archive?.[Number(match[2])]?.image:null;
     const data=typeof image==='string'?image.match(/^data:(image\/(?:png|jpeg|webp));base64,([A-Za-z0-9+/=]+)$/):null;
     if (!data) return json({error:'Not found'},404);
-    const bytes=Uint8Array.from(atob(data[2]),c=>c.charCodeAt(0));
+    let bytes=null;
+    if(request.method!=='HEAD'){const binary=atob(data[2]);bytes=new Uint8Array(binary.length);for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);}
     return new Response(request.method==='HEAD'?null:bytes,{headers:{'Content-Type':data[1],'Cache-Control':'public, max-age=3600','X-Content-Type-Options':'nosniff'}});
    } catch {return json({error:'이미지를 읽지 못했습니다.'},503)}
   }
-  if (['/archive.json','/settings.json','/api/state'].includes(url.pathname)) {
+  if (['/archive.json','/settings.json','/public-state.json','/api/state'].includes(url.pathname)) {
    if (!['GET','HEAD'].includes(request.method)) return json({error:'Method not allowed'},405);
    try {
     const state = env.ARCHIVE_STORE ? await env.ARCHIVE_STORE.get(STATE_KEY,'json') : null;
@@ -85,7 +89,12 @@ export default {
      const archive=!admin && typeof state.version==='string' && /^[a-zA-Z0-9-]{1,100}$/.test(state.version)
       ?state.archive.map((row,index)=>({...row,image:row.image.startsWith('data:image/')?url.origin+'/published-images/'+state.version+'/'+index:row.image}))
       :state.archive;
+     if(url.pathname==='/public-state.json') return json({archive,settings:state.settings});
      return json(url.pathname === '/archive.json'?archive:state.settings);
+    }
+    if(url.pathname==='/public-state.json'){
+     const [archive,settings]=await Promise.all(['/archive.json','/settings.json'].map(async path=>{const response=await env.ASSETS.fetch(new Request(url.origin+path));if(!response.ok)throw Error('Unavailable');return response.json();}));
+     return json({archive,settings});
     }
    } catch {return json({error:'공개 자료를 읽지 못했습니다.'},503)}
   }

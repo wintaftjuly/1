@@ -5,7 +5,7 @@ const keys=await crypto.subtle.generateKey({name:'RSASSA-PKCS1-v1_5',modulusLeng
 const jwk=await crypto.subtle.exportKey('jwk',keys.publicKey);jwk.kid='test-key';
 const originalFetch=globalThis.fetch;globalThis.fetch=async url=>{assert.equal(url,'https://archive-test.cloudflareaccess.com/cdn-cgi/access/certs');return Response.json({keys:[jwk]})};
 const base={ACCESS_TEAM_DOMAIN:'archive-test.cloudflareaccess.com',ACCESS_AUD:'editor-audience',ADMIN_MODE:'true',ASSETS:{fetch:async()=>new Response('ASSET')}};
-let stored=null;const env={...base,ARCHIVE_STORE:{get:async()=>stored?JSON.parse(stored):null,put:async(k,v)=>{assert.equal(k,'published-v1');stored=v}}};
+let stored=null;const snapshots=new Map();const env={...base,ARCHIVE_STORE:{get:async key=>key==='published-v1'?(stored?JSON.parse(stored):null):(snapshots.has(key)?JSON.parse(snapshots.get(key)):null),put:async(k,v,options)=>{if(k==='published-v1')stored=v;else{assert(k.startsWith('published-snapshot:'));assert.equal(options.expirationTtl,604800);snapshots.set(k,v);}}}};
 const b64=value=>Buffer.from(typeof value==='string'?value:JSON.stringify(value)).toString('base64url');
 async function token(overrides={}){const now=Math.floor(Date.now()/1000),parts=b64({alg:'RS256',kid:'test-key'})+'.'+b64({iss:'https://archive-test.cloudflareaccess.com',aud:['editor-audience'],email:'owner@example.com',iat:now,exp:now+60,...overrides});return parts+'.'+Buffer.from(await crypto.subtle.sign('RSASSA-PKCS1-v1_5',keys.privateKey,new TextEncoder().encode(parts))).toString('base64url')}
 const jwt=await token();const headers={'Cf-Access-Jwt-Assertion':jwt,'Origin':'https://admin.example','Content-Type':'application/json'};
@@ -47,6 +47,11 @@ assert.equal((await call('/published-images/wrong/0',{},publicEnv)).status,404);
 assert.equal((await call(imagePath.replace(/\/0$/,'/999'),{},publicEnv)).status,404);
 assert.equal((await call(imagePath)).status,401);
 assert.equal((await call('/api/publish',{method:'POST',headers,body:JSON.stringify(uploaded)})).status,200);
-assert.equal((await call(imagePath,{},publicEnv)).status,404,'Old photo URLs must not return a different published image');
+assert.equal(await(await call(imagePath,{},publicEnv)).text(),'hello','Old photo URLs must survive republishing without returning different images');
+const publicState=await(await call('/public-state.json',{},publicEnv)).json();
+assert.equal(publicState.settings.titleLead,uploaded.settings.titleLead);
+assert.equal(publicState.archive[0].name,uploaded.archive[0].name);
+assert(publicState.archive[0].image.includes('/published-images/'));
+assert(!JSON.stringify(publicState).includes('data:image/'));
 assert.equal((await call('/api/publish',{method:'POST',headers,body:JSON.stringify(changed)},{...env,ARCHIVE_STORE:null})).status,503);
 globalThis.fetch=originalFetch;console.log('PASS: genuine JWT signatures, expiry/audience/tamper rejection, fail-closed editor, public write denial, CSRF, validation, publish/update/public reads, missing storage');

@@ -62,11 +62,28 @@ function render() {
 }
 $('#detail [data-close]').onclick = () => $('#detail').close();
 $('#detail').addEventListener('click', event => { if (event.target !== $('#detail')) return; const rect = $('#detail').getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) $('#detail').close(); });
-records = validateRecords(BUNDLED_ARCHIVE); siteCopy = validateCopy(BUNDLED_COPY); render();
-async function refreshPublishedData() {
- await Promise.allSettled([
-  fetchPublished('archive.json').then(response => {if(!response.ok) throw Error('Unavailable');return response.json();}).then(validateRecords).then(data=>{records=data;}).finally(()=>{render();document.documentElement.classList.remove('archive-loading');}),
-  fetchPublished('settings.json').then(response => {if(!response.ok) throw Error('Unavailable');return response.json();}).then(validateCopy).then(data=>{siteCopy=data;render();})
- ]);
+let refreshInFlight, imageRefreshAttempted=false;
+function recoverImage(event){
+ const image=event.target;
+ if(image.tagName!=='IMG'||!image.src.includes('/published-images/'))return;
+ if(!imageRefreshAttempted){imageRefreshAttempted=true;refreshPublishedData();}
 }
-refreshPublishedData().finally(()=>document.documentElement.classList.remove('archive-loading'));
+$('#archive').addEventListener('error',recoverImage,true);
+async function refreshPublishedData() {
+ if(refreshInFlight)return refreshInFlight;
+ refreshInFlight=(async()=>{
+  try{
+   const response=await fetchPublished('public-state.json',15000);
+   let state;
+   if(response.status===404){const responses=await Promise.all(['archive.json','settings.json'].map(url=>fetchPublished(url,15000)));if(responses.some(r=>!r.ok))throw Error('Unavailable');state={archive:await responses[0].json(),settings:await responses[1].json()};}
+   else{if(!response.ok)throw Error('Unavailable');state=await response.json();}
+   const nextRecords=validateRecords(state.archive),nextCopy=validateCopy(state.settings);
+   records=nextRecords;siteCopy=nextCopy;render();
+   document.documentElement.classList.remove('archive-loading','copy-pending');
+  }catch{
+   if(!records.length){const status=$('#archive-loading');status.replaceChildren(document.createTextNode('자료를 불러오지 못했습니다. '));const retry=el('button','','다시 시도');retry.onclick=()=>{status.textContent='아카이브를 불러오는 중…';refreshPublishedData();};status.append(retry);}
+  }finally{refreshInFlight=null;}
+ })();
+ return refreshInFlight;
+}
+refreshPublishedData();

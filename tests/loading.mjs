@@ -15,6 +15,6 @@ for(const directory of ['dist','dist-admin']){
  assert.equal(assets.length,7);
  for(const file of assets){assert(existsSync(resolve(root,directory,file)),`Missing ${file}`);assert(headers.includes('/'+file+'\n  Cache-Control: public, max-age=31536000, immutable'));}
  assert(!html.includes('data:font/'),'Fonts must not block HTML download');
- if(directory==='dist'){assert(html.includes('class="archive-loading"'));assert(!html.includes('class="copy-loading"'));assert(html.includes('role="status"'));}
+ if(directory==='dist'){assert(html.includes('class="archive-loading copy-pending"'));assert(!html.includes('class="copy-loading"'));assert(html.includes('role="status"'));}
 }
 console.log('PASS: initial HTML budget, emitted assets, cache headers, CSP hashes, executable scripts, visible public loading shell');

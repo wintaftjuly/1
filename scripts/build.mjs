@@ -58,7 +58,7 @@ const hash = text => `'sha256-${createHash('sha256').update(text).digest('base64
 const favicon = `data:image/svg+xml;base64,${Buffer.from(read('favicon.svg')).toString('base64')}`;
 const editorTemplate = read('src/index.html');
 let publicTemplate = editorTemplate
- .replace('class="copy-loading"', 'class="archive-loading"')
+ .replace('class="copy-loading"', 'class="archive-loading copy-pending"')
  .replace('<div id="archive"></div>', '<p id="archive-loading" role="status">아카이브를 불러오는 중…</p><div id="archive"></div>')
  .replace(/<div class="header-actions">[\s\S]*?<\/div>/, '')
  .replace(/<button id="edit-selected"[\s\S]*?<\/button>/, '')

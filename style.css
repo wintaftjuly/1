@@ -87,6 +87,7 @@ footer{background:var(--fresh-green);color:var(--dark);border-color:var(--dark)}
 /* Keep template copy out of the first paint while published/local copy loads. */
 .copy-loading body{visibility:hidden}
 .archive-loading #archive,.archive-loading #years,.archive-loading #total{visibility:hidden}
+.copy-pending [data-copy]{visibility:hidden}
 #archive-loading{padding:24px 4%;font-size:14px}
 html:not(.archive-loading) #archive-loading{display:none}
 
