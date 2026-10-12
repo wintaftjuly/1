@@ -3,7 +3,8 @@ import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 const root = fileURLToPath(new URL('../', import.meta.url));
-const read = file => readFileSync(resolve(root, file), 'utf8');
+// HTML parsing normalizes CRLF; CSP hashes must use the same LF source.
+const read = file => readFileSync(resolve(root, file), 'utf8').replace(/\r\n?/g, '\n');
 const encode = value => JSON.stringify(value).replaceAll('<', '\\u003c').replaceAll('\u2028', '\\u2028').replaceAll('\u2029', '\\u2029');
 const portraits = {};
 for (let i = 1; i <= 8; i++) {

@@ -10,7 +10,7 @@ for(const directory of ['dist','dist-admin']){
  const script=html.match(/<script>([\s\S]*?)<\/script>/)[1];new Script(script);
  const css=html.match(/<style>([\s\S]*?)<\/style>/)[1];
  const headers=readFileSync(resolve(root,directory,'_headers'),'utf8');
- for(const block of [script,css]) assert(headers.includes(createHash('sha256').update(block).digest('base64')),'CSP hash must match output');
+ for(const block of [script,css]) assert(headers.includes(createHash('sha256').update(block.replace(/\r\n?/g,'\n')).digest('base64')),'CSP hash must match browser-normalized output');
  const assets=[...new Set(html.match(/assets\/(?:fonts|tapes)\/[^'"\s)]+\.(?:woff2|otf|png)/g))];
  assert.equal(assets.length,7);
  for(const file of assets){assert(existsSync(resolve(root,directory,file)),`Missing ${file}`);assert(headers.includes('/'+file+'\n  Cache-Control: public, max-age=31536000, immutable'));}
