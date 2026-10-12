@@ -39,7 +39,7 @@ function showDetail(id) {
  $('#detail').showModal();
 }
 function render() {
- const archive = $('#archive'), nav = $('#years'); archive.replaceChildren(); nav.replaceChildren();
+ const archive = $('#archive'), nav = $('#years'); archive.replaceChildren(); nav.replaceChildren();let photoIndex=0;
  const years = [...new Set(records.map(row => row.year))].sort((a,b) => b-a);
  $('#total').textContent = String(records.length).padStart(2,'0') + ' ' + siteCopy.characterLabel + ' / ' + years.length + ' ' + siteCopy.seasonLabel;
  years.forEach(year => {
@@ -50,7 +50,7 @@ function render() {
   group.forEach((row,index) => {
    const card = el('button','card'); applyCardAngle(card,row.id);applyCardTape(card,row.id); card.setAttribute('aria-label',row.name+' · '+row.community+' · '+year+'년 상세 보기');
    const portrait = el('div','portrait'); portrait.dataset.viewStory = siteCopy.viewStory;
-   const image = el('img'); image.src = BUNDLED_PORTRAITS[row.image] || row.image; image.alt = row.name+'의 초상'; image.loading = 'lazy'; portrait.append(image);
+   const image = el('img');image.loading=photoIndex<4?'eager':'lazy';image.fetchPriority=photoIndex<4?'high':'auto';image.decoding='async';photoIndex++;image.src = BUNDLED_PORTRAITS[row.image] || row.image; image.alt = row.name+'의 초상'; portrait.append(image);
    const meta = el('div','card-meta'); meta.append(el('span','card-name',row.name),el('span','card-num',String(index+1).padStart(2,'0')));
    card.append(portrait,meta); card.append(el('div','card-community',row.community)); card.onclick = () => showDetail(row.id); grid.append(card);
   });

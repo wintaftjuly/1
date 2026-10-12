@@ -4,6 +4,15 @@ const MAX_BYTES = 24 * 1024 * 1024;
 const COPY_KEYS = ['titleLead','titleAccent','subtitle','spine','characterLabel','seasonLabel','viewStory','managerTitle','footerHandle'];
 const json = (body, status=200) => new Response(JSON.stringify(body), {status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 let certCache;
+const publicReadCache=new WeakMap();
+function readPublicState(store,key=STATE_KEY){
+ if(!store)return Promise.resolve(null);
+ let entries=publicReadCache.get(store);if(!entries){entries=new Map();publicReadCache.set(store,entries);}
+ const existing=entries.get(key);if(existing&&existing.until>Date.now())return existing.promise;
+ if(entries.size>=2)entries.clear();
+ const promise=store.get(key,'json').catch(error=>{entries.delete(key);throw error;});
+ entries.set(key,{until:Date.now()+15000,promise});return promise;
+}
 function publicState(state,origin){
  const archive=typeof state.version==='string'&&/^[a-zA-Z0-9-]{1,100}$/.test(state.version)
   ?state.archive.map((row,index)=>({...row,image:row.image.startsWith('data:image/')?origin+'/published-images/'+state.version+'/'+index:row.image})):state.archive;
@@ -42,7 +51,7 @@ export function validateState(data) {
  return {archive,settings};
 }
 export default {
- async fetch(request,env) {
+ async fetch(request,env,ctx) {
   const url = new URL(request.url), admin = env.ADMIN_MODE === 'true';
   if (admin) {
    if (!env.ACCESS_TEAM_DOMAIN || !env.ACCESS_AUD) return json({error:'관리자 인증 설정이 필요합니다. ACCESS_TEAM_DOMAIN과 ACCESS_AUD를 설정하세요.'},503);
@@ -65,6 +74,7 @@ export default {
     const previous=await env.ARCHIVE_STORE.get(STATE_KEY,'json');
     if(previous?.version) await env.ARCHIVE_STORE.put('published-snapshot:'+previous.version,JSON.stringify(previous),{expirationTtl:604800});
     await env.ARCHIVE_STORE.put(STATE_KEY,JSON.stringify(state));
+    publicReadCache.delete(env.ARCHIVE_STORE);
     return json({ok:true,publishedAt:state.publishedAt,version:state.version});
    } catch (error) {return json({error:error instanceof SyntaxError?'자료 형식이 올바르지 않습니다.':error.message || '게시하지 못했습니다.'},400)}
   }
@@ -75,20 +85,26 @@ export default {
    const match=url.pathname.match(/^\/published-images\/([a-zA-Z0-9-]{1,100})\/(0|[1-9]\d*)$/);
    if (!match) return json({error:'Not found'},404);
    try {
-    let state=env.ARCHIVE_STORE?await env.ARCHIVE_STORE.get(STATE_KEY,'json'):null;
-    if(state && state.version!==match[1]) state=await env.ARCHIVE_STORE.get('published-snapshot:'+match[1],'json');
+    const cache=!admin&&typeof caches!=='undefined'?caches.default:null;
+    const cacheUrl=new URL(url);cacheUrl.search='';const cacheKey=new Request(cacheUrl,{method:'GET'});
+    const hit=cache?await cache.match(cacheKey).catch(()=>null):null;
+    if(hit){const headers=new Headers(hit.headers);headers.set('X-Archive-Cache','HIT');return new Response(request.method==='HEAD'?null:hit.body,{status:hit.status,headers});}
+    let state=await readPublicState(env.ARCHIVE_STORE);
+    if(state && state.version!==match[1]) state=await readPublicState(env.ARCHIVE_STORE,'published-snapshot:'+match[1]);
     const image=state?.version===match[1]?state.archive?.[Number(match[2])]?.image:null;
     const data=typeof image==='string'?image.match(/^data:(image\/(?:png|jpeg|webp));base64,([A-Za-z0-9+/=]+)$/):null;
     if (!data) return json({error:'Not found'},404);
     let bytes=null;
     if(request.method!=='HEAD'){const binary=atob(data[2]);bytes=new Uint8Array(binary.length);for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);}
-    return new Response(request.method==='HEAD'?null:bytes,{headers:{'Content-Type':data[1],'Cache-Control':'public, max-age=3600','X-Content-Type-Options':'nosniff'}});
+    const response=new Response(bytes,{headers:{'Content-Type':data[1],'Cache-Control':'public, max-age=604800, immutable','X-Content-Type-Options':'nosniff','X-Archive-Cache':cache?'MISS':'BYPASS'}});
+    if(cache&&request.method==='GET'){const pending=cache.put(cacheKey,response.clone()).catch(()=>{});if(ctx?.waitUntil)ctx.waitUntil(pending);else await pending;}
+    return response;
    } catch {return json({error:'이미지를 읽지 못했습니다.'},503)}
   }
   if (['/archive.json','/settings.json','/public-state.json','/api/state'].includes(url.pathname)) {
    if (!['GET','HEAD'].includes(request.method)) return json({error:'Method not allowed'},405);
    try {
-    const state = env.ARCHIVE_STORE ? await env.ARCHIVE_STORE.get(STATE_KEY,'json') : null;
+    const state = admin?(env.ARCHIVE_STORE?await env.ARCHIVE_STORE.get(STATE_KEY,'json'):null):await readPublicState(env.ARCHIVE_STORE);
     if (url.pathname === '/api/state') return json({configured:!!env.ARCHIVE_STORE,state});
     if (state) {
      const archive=!admin?publicState(state,url.origin).archive:state.archive;
@@ -104,7 +120,7 @@ export default {
   if (url.pathname.startsWith('/api/')) return json({error:'Not found'},404);
   if(!admin&&['/','/index.html'].includes(url.pathname)&&request.method==='GET'&&env.ARCHIVE_STORE){
    try{
-    const state=await env.ARCHIVE_STORE.get(STATE_KEY,'json');
+    const state=await readPublicState(env.ARCHIVE_STORE);
     if(state){
      const response=await env.ASSETS.fetch(request);
      if(response.ok&&response.headers.get('Content-Type')?.includes('text/html')){

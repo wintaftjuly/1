@@ -16,5 +16,6 @@ for(const directory of ['dist','dist-admin']){
  for(const file of assets){assert(existsSync(resolve(root,directory,file)),`Missing ${file}`);assert(headers.includes('/'+file+'\n  Cache-Control: public, max-age=31536000, immutable'));}
  assert(!html.includes('data:font/'),'Fonts must not block HTML download');
  if(directory==='dist'){assert(html.includes('class="archive-loading copy-pending"'));assert(!html.includes('class="copy-loading"'));assert(html.includes('role="status"'));}
+ if(directory==='dist'){assert(Buffer.byteLength(html)<110000,'Public HTML must stay below 110 KB');const audio=html.match(/<audio\b[^>]*>/)[0];assert(audio.includes('preload="none"'));assert(!audio.includes('autoplay'));}
 }
 console.log('PASS: initial HTML budget, emitted assets, cache headers, CSP hashes, executable scripts, visible public loading shell');

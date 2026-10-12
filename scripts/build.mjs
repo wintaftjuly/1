@@ -28,10 +28,10 @@ function assetUrl(file) {
 css = css.replaceAll(fontFile, assetUrl(fontFile)).replaceAll(spineFont, assetUrl(spineFont));
 const cursorData = file => `data:image/svg+xml;base64,${Buffer.from(read(file)).toString('base64')}`;
 const cursors = {
-  arrow: cursorData('assets/cursors/left_ptr.svg'),
-  hand: cursorData('assets/cursors/hand2.svg'),
-  text: cursorData('assets/cursors/xterm.svg'),
-  wait: Array.from({ length: 40 }, (_, i) => cursorData(`assets/cursors/wait/wait-${String(i+1).padStart(2,'0')}.svg`)),
+  arrow: 'assets/cursors/left_ptr.svg',
+  hand: 'assets/cursors/hand2.svg',
+  text: 'assets/cursors/xterm.svg',
+  wait: Array.from({ length: 40 }, (_, i) => `assets/cursors/wait/wait-${String(i+1).padStart(2,'0')}.svg`),
 };
 for (const file of ['left_ptr.svg', 'hand2.svg', 'xterm.svg']) {
   css = css.replaceAll(`assets/cursors/${file}`, cursorData(`assets/cursors/${file}`));
@@ -59,6 +59,7 @@ const favicon = `data:image/svg+xml;base64,${Buffer.from(read('favicon.svg')).to
 const editorTemplate = read('src/index.html');
 let publicTemplate = editorTemplate
  .replace('class="copy-loading"', 'class="archive-loading copy-pending"')
+ .replace('autoplay loop preload="metadata"','data-defer-boot="true" loop preload="none"')
  .replace('<div id="archive"></div>', '<p id="archive-loading" role="status">아카이브를 불러오는 중…</p><div id="archive"></div>')
  .replace(/<div class="header-actions">[\s\S]*?<\/div>/, '')
  .replace(/<button id="edit-selected"[\s\S]*?<\/button>/, '')
