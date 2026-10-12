@@ -16,9 +16,15 @@ for (const file of ['cursor-arrow.svg', 'cursor-cross.svg']) {
   css = css.replaceAll(`assets/${file}`, uri);
 }
 const fontFile = 'assets/fonts/PretendardVariable.woff2';
-css = css.replaceAll(fontFile, `data:font/woff2;base64,${readFileSync(resolve(root, fontFile)).toString('base64')}`);
 const spineFont = 'assets/fonts/Transcity-Regular.otf';
-css = css.replaceAll(spineFont, `data:font/otf;base64,${readFileSync(resolve(root, spineFont)).toString('base64')}`);
+// Versioned assets can be cached without inflating the first HTML response.
+const externalAssets = new Map();
+function assetUrl(file) {
+ const digest = createHash('sha256').update(readFileSync(resolve(root,file))).digest('hex').slice(0,16);
+ const target = file.replace(/(\.[^.]+)$/, `.${digest}$1`);
+ externalAssets.set(file,target); return target;
+}
+css = css.replaceAll(fontFile, assetUrl(fontFile)).replaceAll(spineFont, assetUrl(spineFont));
 const cursorData = file => `data:image/svg+xml;base64,${Buffer.from(read(file)).toString('base64')}`;
 const cursors = {
   arrow: cursorData('assets/cursors/left_ptr.svg'),
@@ -34,7 +40,7 @@ const tapes = [
  {ratio:'530 / 205',width:114},{ratio:'445 / 205',width:104},
  {ratio:'280 / 365',width:46},{ratio:'280 / 365',width:46},
  {ratio:'637 / 205',width:126},
-].map((tape,i)=>({...tape,src:`data:image/png;base64,${readFileSync(resolve(root,`assets/tapes/tape-${i+1}.png`)).toString('base64')}`}));
+].map((tape,i)=>({...tape,src:assetUrl(`assets/tapes/tape-${i+1}.png`)}));
 const galleryLayout = read('shared/gallery.mjs').replaceAll('export function ', 'function ');
 const orderLogic = read('shared/order.mjs').replaceAll('export function ', 'function ');
 const mediaValidation = read('shared/media.mjs').replaceAll('export function ', 'function ');
@@ -51,6 +57,8 @@ const hash = text => `'sha256-${createHash('sha256').update(text).digest('base64
 const favicon = `data:image/svg+xml;base64,${Buffer.from(read('favicon.svg')).toString('base64')}`;
 const editorTemplate = read('src/index.html');
 let publicTemplate = editorTemplate
+ .replace('class="copy-loading"', 'class="archive-loading"')
+ .replace('<div id="archive"></div>', '<p id="archive-loading" role="status">아카이브를 불러오는 중…</p><div id="archive"></div>')
  .replace(/<div class="header-actions">[\s\S]*?<\/div>/, '')
  .replace(/<button id="edit-selected"[\s\S]*?<\/button>/, '')
  .replace(/<dialog id="(?:manager|editor|publish-dialog)"[\s\S]*?<\/dialog>/g, '');
@@ -67,7 +75,7 @@ function compile(template, script) {
   .replace('href="favicon.svg"', `href="${favicon}"`)
   .replace(/<script src="[^"]+" defer><\/script>/, '')
   .replace('</body>', `<script>${script}</script></body>`);
- const headers = `/*\n  Content-Security-Policy: ${csp}\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n`;
+ const headers = `/*\n  Content-Security-Policy: ${csp}\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n` + [...externalAssets.values()].map(file=>`/${file}\n  Cache-Control: public, max-age=31536000, immutable\n`).join('');
  return {html,headers};
 }
 function outputDirectory(name, bundle) {
@@ -75,6 +83,7 @@ function outputDirectory(name, bundle) {
  writeFileSync(resolve(output, 'index.html'), bundle.html); writeFileSync(resolve(output, '_headers'), bundle.headers);
  for (const file of ['archive.json','settings.json','.nojekyll','favicon.svg']) copyFileSync(resolve(root,file),resolve(output,file));
  mkdirSync(resolve(output,'assets/fonts'),{recursive:true}); copyFileSync(resolve(root,'assets/fonts/Pretendard-OFL.txt'),resolve(output,'assets/fonts/Pretendard-OFL.txt'));
+ for(const [source,target] of externalAssets){mkdirSync(resolve(output,target,'..'),{recursive:true});copyFileSync(resolve(root,source),resolve(output,target));}
  copyFileSync(resolve(root,'assets/fonts/Transcity-SOURCE.txt'),resolve(output,'assets/fonts/Transcity-SOURCE.txt'));
  for (const file of ['NotoSerifTC-OFL.txt','NotoSerifKR-OFL.txt','TitleFont-SOURCE.txt','Favicon-SOURCE.txt']) copyFileSync(resolve(root,'assets/fonts/'+file),resolve(output,'assets/fonts/'+file));
  cpSync(resolve(root,'assets/audio'),resolve(output,'assets/audio'),{recursive:true});

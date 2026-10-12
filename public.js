@@ -64,9 +64,9 @@ $('#detail [data-close]').onclick = () => $('#detail').close();
 $('#detail').addEventListener('click', event => { if (event.target !== $('#detail')) return; const rect = $('#detail').getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) $('#detail').close(); });
 records = validateRecords(BUNDLED_ARCHIVE); siteCopy = validateCopy(BUNDLED_COPY); render();
 async function refreshPublishedData() {
- const results = await Promise.allSettled([fetchPublished('archive.json').then(response => {if(!response.ok) throw Error('Unavailable');return response.json();}).then(validateRecords),fetchPublished('settings.json').then(response => {if(!response.ok) throw Error('Unavailable');return response.json();}).then(validateCopy)]);
- if (results[0].status === 'fulfilled') records = results[0].value;
- if (results[1].status === 'fulfilled') siteCopy = results[1].value;
- render();
+ await Promise.allSettled([
+  fetchPublished('archive.json').then(response => {if(!response.ok) throw Error('Unavailable');return response.json();}).then(validateRecords).then(data=>{records=data;}).finally(()=>{render();document.documentElement.classList.remove('archive-loading');}),
+  fetchPublished('settings.json').then(response => {if(!response.ok) throw Error('Unavailable');return response.json();}).then(validateCopy).then(data=>{siteCopy=data;render();})
+ ]);
 }
-refreshPublishedData().finally(()=>document.documentElement.classList.remove('copy-loading'));
+refreshPublishedData().finally(()=>document.documentElement.classList.remove('archive-loading'));

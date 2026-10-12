@@ -1,5 +1,19 @@
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-tvcn7i9BM2VQou2u4ZkqjSrJVaLzjI4tmQ01+Ce/Iy4='; style-src 'self' 'sha256-5m1K8cie6G/XBgWQWFj/KbG6/uLjvknDQfsZph6jleA='; img-src 'self' data: https:; media-src 'self'; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-dK2jspSQayoCgnBuTDjjZSIL/ReRVoS6NjVOpZdu6dk='; style-src 'self' 'sha256-rzVnOOnENDbNsEw/ebfx/bEBF61C1c4O6uOHQe3jYJY='; img-src 'self' data: https:; media-src 'self'; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'
   X-Content-Type-Options: nosniff
   Referrer-Policy: no-referrer
   Permissions-Policy: camera=(), microphone=(), geolocation=()
+/assets/fonts/PretendardVariable.9599f12fd42fc0bc.woff2
+  Cache-Control: public, max-age=31536000, immutable
+/assets/fonts/Transcity-Regular.2d380619bbd1103f.otf
+  Cache-Control: public, max-age=31536000, immutable
+/assets/tapes/tape-1.56e6039d9a73d0e8.png
+  Cache-Control: public, max-age=31536000, immutable
+/assets/tapes/tape-2.3ecfc0d6b21a0951.png
+  Cache-Control: public, max-age=31536000, immutable
+/assets/tapes/tape-3.7a75c8207fa72c35.png
+  Cache-Control: public, max-age=31536000, immutable
+/assets/tapes/tape-4.59cd56d2707735b4.png
+  Cache-Control: public, max-age=31536000, immutable
+/assets/tapes/tape-5.ca410c8d9d22b221.png
+  Cache-Control: public, max-age=31536000, immutable
