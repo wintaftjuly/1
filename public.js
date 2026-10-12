@@ -58,7 +58,7 @@ function render() {
  });
  if (!years.length) archive.append(el('p','empty','아직 등록된 캐릭터가 없습니다.'));
  observer?.disconnect(); observer = new IntersectionObserver(entries => { for (const entry of entries) if (entry.isIntersecting) nav.querySelectorAll('a').forEach(link => link.classList.toggle('active',link.hash === '#'+entry.target.id)); },{rootMargin:'-10% 0px -60% 0px'});
- document.querySelectorAll('.year-section').forEach(section => observer.observe(section)); applyCopy();
+ document.querySelectorAll('.year-section').forEach(section => observer.observe(section)); applyCopy();schedulePublicFont();
 }
 $('#detail [data-close]').onclick = () => $('#detail').close();
 $('#detail').addEventListener('click', event => { if (event.target !== $('#detail')) return; const rect = $('#detail').getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) $('#detail').close(); });

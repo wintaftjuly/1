@@ -71,12 +71,12 @@ const toolbarStart = publicTemplate.indexOf('<div id="copy-toolbar"');
 const cursorStart = publicTemplate.indexOf('<div id="cursor"');
 publicTemplate = publicTemplate.slice(0, toolbarStart) + publicTemplate.slice(cursorStart);
 let reader = `const BUNDLED_CURSORS=${encode(cursors)};\nconst BUNDLED_PORTRAITS={};\nconst BUNDLED_ARCHIVE=[];\nconst BUNDLED_COPY=${encode(publicCopy)};\n${publishedLoader}\n${galleryLayout}\n${mediaValidation}\n${read('public.js')}\n${read('showcase.js')}\n${read('audio.js')}\n${read('spine.js')}\n${read('cursor.js')}`;
-reader = `const BUNDLED_TAPES=${encode(tapes)};\n${reader}`;
+reader = `const PUBLIC_FONT_URL=${encode(externalAssets.get(fontFile))};\n${read('shared/mobile-font.mjs').replaceAll('export function ','function ')}\nconst BUNDLED_TAPES=${encode(tapes)};\n${reader}`;
 reader = reader.replaceAll('</script', '<\\/script');
-function compile(template, script) {
- const csp = `default-src 'self'; script-src 'self' ${hash(script)}; style-src 'self' ${hash(css)}; img-src 'self' data: https:; media-src 'self'; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'`;
+function compile(template, script, compiledCss=css) {
+ const csp = `default-src 'self'; script-src 'self' ${hash(script)}; style-src 'self' ${hash(compiledCss)}; img-src 'self' data: https:; media-src 'self'; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'`;
  const html = template
-  .replace(/<link rel="stylesheet" href="[^"]+">/, `<style>${css}</style>`)
+  .replace(/<link rel="stylesheet" href="[^"]+">/, `<style>${compiledCss}</style>`)
   .replace('href="favicon.svg"', `href="${favicon}"`)
   .replace(/<script src="[^"]+" defer><\/script>/, '')
   .replace('</body>', `<script>${script}</script></body>`);
@@ -95,7 +95,8 @@ function outputDirectory(name, bundle) {
  cpSync(resolve(root,'assets/audio'),resolve(output,'assets/audio'),{recursive:true});
  cpSync(resolve(root,'assets/cursors'),resolve(output,'assets/cursors'),{recursive:true});
 }
-const publicBundle = compile(publicTemplate, reader), editorBundle = compile(editorTemplate, app);
+const publicCss=css.replace(/@font-face\{font-family:'Pretendard'[^}]*\}/g,face=>`@media not all and (pointer:coarse){${face}}`);
+const publicBundle = compile(publicTemplate, reader,publicCss), editorBundle = compile(editorTemplate, app);
 writeFileSync(resolve(root,'index.html'),publicBundle.html);writeFileSync(resolve(root,'_headers'),publicBundle.headers);
 outputDirectory('dist',publicBundle);outputDirectory('dist-admin',editorBundle);
 console.log('Built read-only public site in dist/ and separate editor in dist-admin/. Protect the editor with Cloudflare Access before publishing it.');
