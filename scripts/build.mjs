@@ -71,7 +71,7 @@ const toolbarStart = publicTemplate.indexOf('<div id="copy-toolbar"');
 const cursorStart = publicTemplate.indexOf('<div id="cursor"');
 publicTemplate = publicTemplate.slice(0, toolbarStart) + publicTemplate.slice(cursorStart);
 let reader = `const BUNDLED_CURSORS=${encode(cursors)};\nconst BUNDLED_PORTRAITS={};\nconst BUNDLED_ARCHIVE=[];\nconst BUNDLED_COPY=${encode(publicCopy)};\n${publishedLoader}\n${galleryLayout}\n${mediaValidation}\n${read('public.js')}\n${read('showcase.js')}\n${read('audio.js')}\n${read('spine.js')}\n${read('cursor.js')}`;
-reader = `const PUBLIC_FONT_URL=${encode(externalAssets.get(fontFile))};\n${read('shared/mobile-font.mjs').replaceAll('export function ','function ')}\nconst BUNDLED_TAPES=${encode(tapes)};\n${reader}`;
+reader = `const PUBLIC_FONT_URL=${encode(externalAssets.get(fontFile))};\n${read('shared/mobile-font.mjs').replaceAll('export function ','function ')}\n${read('shared/scroll-images.mjs').replaceAll('export function ','function ')}\nconst BUNDLED_TAPES=${encode(tapes)};\n${reader}`;
 reader = reader.replaceAll('</script', '<\\/script');
 function compile(template, script, compiledCss=css) {
  const csp = `default-src 'self'; script-src 'self' ${hash(script)}; style-src 'self' ${hash(compiledCss)}; img-src 'self' data: https:; media-src 'self'; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'`;

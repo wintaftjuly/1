@@ -126,6 +126,28 @@ function schedulePublicFont(){
 }
 let publicFontScheduled=false;
 
+let scrollImageCleanup;
+function prepareScrollImages(){
+ scrollImageCleanup?.();
+ const images=[...document.querySelectorAll('#archive .portrait img')];
+ const first=images.slice(0,4),rest=images.slice(4);
+ if(!rest.length||typeof IntersectionObserver==='undefined')return;
+ let observer,started=false,cancelled=false;
+ const start=()=>{
+  if(started||cancelled)return;started=true;clearTimeout(deadline);
+  observer=new IntersectionObserver(entries=>{
+   for(const entry of entries){if(!entry.isIntersecting)continue;entry.target.loading='eager';observer.unobserve(entry.target);}
+  },{rootMargin:'2000px 0px',threshold:0});
+  rest.forEach(image=>observer.observe(image));
+ };
+ let pending=first.filter(image=>!image.complete).length;
+ const settled=()=>{pending--;if(pending<=0)start();};
+ const deadline=setTimeout(start,10000);
+ first.filter(image=>!image.complete).forEach(image=>{image.addEventListener('load',settled,{once:true});image.addEventListener('error',settled,{once:true});});
+ scrollImageCleanup=()=>{cancelled=true;clearTimeout(deadline);observer?.disconnect();first.forEach(image=>{image.removeEventListener('load',settled);image.removeEventListener('error',settled);});};
+ if(!pending)start();
+}
+
 const BUNDLED_TAPES=[{"ratio":"530 / 205","width":114,"src":"assets/tapes/tape-1.56e6039d9a73d0e8.png"},{"ratio":"445 / 205","width":104,"src":"assets/tapes/tape-2.3ecfc0d6b21a0951.png"},{"ratio":"280 / 365","width":46,"src":"assets/tapes/tape-3.7a75c8207fa72c35.png"},{"ratio":"280 / 365","width":46,"src":"assets/tapes/tape-4.59cd56d2707735b4.png"},{"ratio":"637 / 205","width":126,"src":"assets/tapes/tape-5.ca410c8d9d22b221.png"}];
 const BUNDLED_CURSORS={"arrow":"assets/cursors/left_ptr.svg","hand":"assets/cursors/hand2.svg","text":"assets/cursors/xterm.svg","wait":["assets/cursors/wait/wait-01.svg","assets/cursors/wait/wait-02.svg","assets/cursors/wait/wait-03.svg","assets/cursors/wait/wait-04.svg","assets/cursors/wait/wait-05.svg","assets/cursors/wait/wait-06.svg","assets/cursors/wait/wait-07.svg","assets/cursors/wait/wait-08.svg","assets/cursors/wait/wait-09.svg","assets/cursors/wait/wait-10.svg","assets/cursors/wait/wait-11.svg","assets/cursors/wait/wait-12.svg","assets/cursors/wait/wait-13.svg","assets/cursors/wait/wait-14.svg","assets/cursors/wait/wait-15.svg","assets/cursors/wait/wait-16.svg","assets/cursors/wait/wait-17.svg","assets/cursors/wait/wait-18.svg","assets/cursors/wait/wait-19.svg","assets/cursors/wait/wait-20.svg","assets/cursors/wait/wait-21.svg","assets/cursors/wait/wait-22.svg","assets/cursors/wait/wait-23.svg","assets/cursors/wait/wait-24.svg","assets/cursors/wait/wait-25.svg","assets/cursors/wait/wait-26.svg","assets/cursors/wait/wait-27.svg","assets/cursors/wait/wait-28.svg","assets/cursors/wait/wait-29.svg","assets/cursors/wait/wait-30.svg","assets/cursors/wait/wait-31.svg","assets/cursors/wait/wait-32.svg","assets/cursors/wait/wait-33.svg","assets/cursors/wait/wait-34.svg","assets/cursors/wait/wait-35.svg","assets/cursors/wait/wait-36.svg","assets/cursors/wait/wait-37.svg","assets/cursors/wait/wait-38.svg","assets/cursors/wait/wait-39.svg","assets/cursors/wait/wait-40.svg"]};
 const BUNDLED_PORTRAITS={};
@@ -226,7 +248,7 @@ function render() {
  });
  if (!years.length) archive.append(el('p','empty','아직 등록된 캐릭터가 없습니다.'));
  observer?.disconnect(); observer = new IntersectionObserver(entries => { for (const entry of entries) if (entry.isIntersecting) nav.querySelectorAll('a').forEach(link => link.classList.toggle('active',link.hash === '#'+entry.target.id)); },{rootMargin:'-10% 0px -60% 0px'});
- document.querySelectorAll('.year-section').forEach(section => observer.observe(section)); applyCopy();schedulePublicFont();
+ document.querySelectorAll('.year-section').forEach(section => observer.observe(section)); applyCopy();schedulePublicFont();prepareScrollImages();
 }
 $('#detail [data-close]').onclick = () => $('#detail').close();
 $('#detail').addEventListener('click', event => { if (event.target !== $('#detail')) return; const rect = $('#detail').getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) $('#detail').close(); });
