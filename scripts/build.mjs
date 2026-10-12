@@ -57,7 +57,10 @@ app = app.replaceAll('</script', '<\\/script');
 const hash = text => `'sha256-${createHash('sha256').update(text).digest('base64')}'`;
 const favicon = `data:image/svg+xml;base64,${Buffer.from(read('favicon.svg')).toString('base64')}`;
 const editorTemplate = read('src/index.html');
+const publicCopy = {...JSON.parse(read('settings.json')),titleLead:'',titleAccent:'',managerTitle:''};
 let publicTemplate = editorTemplate
+ .replace(/(<(?:span|em) data-copy="(?:titleLead|titleAccent)">)[^<]*/g,'$1')
+ .replace('assets/audio/bgm.mp3',assetUrl('assets/audio/bgm.mp3'))
  .replace('class="copy-loading"', 'class="archive-loading copy-pending"')
  .replace('autoplay loop preload="metadata"','data-defer-boot="true" loop preload="none"')
  .replace('<div id="archive"></div>', '<p id="archive-loading" role="status">아카이브를 불러오는 중…</p><div id="archive"></div>')
@@ -67,7 +70,7 @@ let publicTemplate = editorTemplate
 const toolbarStart = publicTemplate.indexOf('<div id="copy-toolbar"');
 const cursorStart = publicTemplate.indexOf('<div id="cursor"');
 publicTemplate = publicTemplate.slice(0, toolbarStart) + publicTemplate.slice(cursorStart);
-let reader = `const BUNDLED_CURSORS=${encode(cursors)};\nconst BUNDLED_PORTRAITS=${encode(portraits)};\nconst BUNDLED_ARCHIVE=${encode(JSON.parse(read('archive.json')))};\nconst BUNDLED_COPY=${encode(JSON.parse(read('settings.json')))};\n${publishedLoader}\n${galleryLayout}\n${mediaValidation}\n${read('public.js')}\n${read('showcase.js')}\n${read('audio.js')}\n${read('spine.js')}\n${read('cursor.js')}`;
+let reader = `const BUNDLED_CURSORS=${encode(cursors)};\nconst BUNDLED_PORTRAITS={};\nconst BUNDLED_ARCHIVE=[];\nconst BUNDLED_COPY=${encode(publicCopy)};\n${publishedLoader}\n${galleryLayout}\n${mediaValidation}\n${read('public.js')}\n${read('showcase.js')}\n${read('audio.js')}\n${read('spine.js')}\n${read('cursor.js')}`;
 reader = `const BUNDLED_TAPES=${encode(tapes)};\n${reader}`;
 reader = reader.replaceAll('</script', '<\\/script');
 function compile(template, script) {
@@ -84,6 +87,7 @@ function outputDirectory(name, bundle) {
  const output = resolve(root, name); rmSync(output, { recursive: true, force: true }); mkdirSync(output, { recursive: true });
  writeFileSync(resolve(output, 'index.html'), bundle.html); writeFileSync(resolve(output, '_headers'), bundle.headers);
  for (const file of ['archive.json','settings.json','.nojekyll','favicon.svg']) copyFileSync(resolve(root,file),resolve(output,file));
+ if(name==='dist'){writeFileSync(resolve(output,'archive.json'),'[]');writeFileSync(resolve(output,'settings.json'),encode(publicCopy));}
  mkdirSync(resolve(output,'assets/fonts'),{recursive:true}); copyFileSync(resolve(root,'assets/fonts/Pretendard-OFL.txt'),resolve(output,'assets/fonts/Pretendard-OFL.txt'));
  for(const [source,target] of externalAssets){mkdirSync(resolve(output,target,'..'),{recursive:true});copyFileSync(resolve(root,source),resolve(output,target));}
  copyFileSync(resolve(root,'assets/fonts/Transcity-SOURCE.txt'),resolve(output,'assets/fonts/Transcity-SOURCE.txt'));

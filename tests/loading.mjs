@@ -17,5 +17,6 @@ for(const directory of ['dist','dist-admin']){
  assert(!html.includes('data:font/'),'Fonts must not block HTML download');
  if(directory==='dist'){assert(html.includes('class="archive-loading copy-pending"'));assert(!html.includes('class="copy-loading"'));assert(html.includes('role="status"'));}
  if(directory==='dist'){assert(Buffer.byteLength(html)<110000,'Public HTML must stay below 110 KB');const audio=html.match(/<audio\b[^>]*>/)[0];assert(audio.includes('preload="none"'));assert(!audio.includes('autoplay'));}
+ if(directory==='dist'){for(const demo of ['얼굴의','서이현','윤서하'])assert(!html.includes(demo),'Public bundle must never contain demo content');assert.equal(readFileSync(resolve(root,directory,'archive.json'),'utf8'),'[]');assert(/bgm\.[a-f0-9]{16}\.mp3/.test(html));}
 }
 console.log('PASS: initial HTML budget, emitted assets, cache headers, CSP hashes, executable scripts, visible public loading shell');

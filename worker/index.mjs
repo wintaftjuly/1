@@ -111,10 +111,7 @@ export default {
      if(url.pathname==='/public-state.json') return json({archive,settings:state.settings});
      return json(url.pathname === '/archive.json'?archive:state.settings);
     }
-    if(url.pathname==='/public-state.json'){
-     const [archive,settings]=await Promise.all(['/archive.json','/settings.json'].map(async path=>{const response=await env.ASSETS.fetch(new Request(url.origin+path));if(!response.ok)throw Error('Unavailable');return response.json();}));
-     return json({archive,settings});
-    }
+    if(!admin||url.pathname==='/public-state.json')return json({error:'게시된 자료가 없습니다.'},503);
    } catch {return json({error:'공개 자료를 읽지 못했습니다.'},503)}
   }
   if (url.pathname.startsWith('/api/')) return json({error:'Not found'},404);
@@ -132,6 +129,19 @@ export default {
      return response;
     }
    }catch{/* The client can retry the metadata endpoint if storage is unavailable. */}
+  }
+  if(url.pathname.startsWith('/assets/audio/')&&request.method==='GET'&&request.headers.has('Range')){
+   const headers=new Headers(request.headers);headers.delete('Range');
+   const response=await env.ASSETS.fetch(new Request(request,{headers}));
+   if(response.status!==200)return response;
+   const bytes=await response.arrayBuffer(),length=bytes.byteLength;
+   const range=request.headers.get('Range').match(/^bytes=(\d*)-(\d*)$/);
+   if(!range||(!range[1]&&!range[2]))return new Response(null,{status:416,headers:{'Content-Range':`bytes */${length}`}});
+   const start=range[1]?Number(range[1]):Math.max(0,length-Number(range[2]));
+   const end=range[1]?(range[2]?Math.min(Number(range[2]),length-1):length-1):length-1;
+   if(start>=length||end<start)return new Response(null,{status:416,headers:{'Content-Range':`bytes */${length}`}});
+   const resultHeaders=new Headers(response.headers);resultHeaders.set('Accept-Ranges','bytes');resultHeaders.set('Content-Range',`bytes ${start}-${end}/${length}`);resultHeaders.set('Content-Length',String(end-start+1));
+   return new Response(bytes.slice(start,end+1),{status:206,headers:resultHeaders});
   }
   return env.ASSETS.fetch(request);
  }

@@ -11,6 +11,13 @@ async function token(overrides={}){const now=Math.floor(Date.now()/1000),parts=b
 const jwt=await token();const headers={'Cf-Access-Jwt-Assertion':jwt,'Origin':'https://admin.example','Content-Type':'application/json'};
 const payload={archive:JSON.parse(fs.readFileSync(new URL('../archive.json',import.meta.url))).map(row=>({...row,altName:''})),settings:JSON.parse(fs.readFileSync(new URL('../settings.json',import.meta.url)))};
 const call=(path,options={},bindings=env)=>worker.fetch(new Request('https://admin.example'+path,options),bindings);
+const emptyPublic={ADMIN_MODE:'false',ASSETS:{fetch:async()=>{throw Error('Demo fallback must not be read');}}};
+assert.equal((await call('/public-state.json',{},emptyPublic)).status,503);
+const audioEnv={ADMIN_MODE:'false',ASSETS:{fetch:async request=>{assert(!request.headers.has('Range'));return new Response('0123456789',{headers:{'Content-Type':'audio/mpeg'}});}}};
+const rangeResponse=await call('/assets/audio/bgm.mp3',{headers:{Range:'bytes=2-5'}},audioEnv);
+assert.equal(rangeResponse.status,206);assert.equal(rangeResponse.headers.get('Content-Range'),'bytes 2-5/10');assert.equal(await rangeResponse.text(),'2345');
+const suffixResponse=await call('/assets/audio/bgm.mp3',{headers:{Range:'bytes=-3'}},audioEnv);assert.equal(await suffixResponse.text(),'789');
+assert.equal((await call('/assets/audio/bgm.mp3',{headers:{Range:'bytes=10-'}},audioEnv)).status,416);
 assert.equal((await call('/')).status,401);
 assert.equal((await call('/',{}, {...env,ACCESS_AUD:''})).status,503);
 assert.equal(await authenticate(new Request('https://admin.example',{headers:{'Cf-Access-Jwt-Assertion':await token({exp:1})}}),env),false);

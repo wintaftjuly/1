@@ -74,9 +74,8 @@ async function refreshPublishedData() {
  refreshInFlight=(async()=>{
   try{
    const response=await fetchPublished('public-state.json',15000);
-   let state;
-   if(response.status===404){const responses=await Promise.all(['archive.json','settings.json'].map(url=>fetchPublished(url,15000)));if(responses.some(r=>!r.ok))throw Error('Unavailable');state={archive:await responses[0].json(),settings:await responses[1].json()};}
-   else{if(!response.ok)throw Error('Unavailable');state=await response.json();}
+   if(!response.ok)throw Error('Unavailable');
+   const state=await response.json();
    const nextRecords=validateRecords(state.archive),nextCopy=validateCopy(state.settings);
    records=nextRecords;siteCopy=nextCopy;render();
    document.documentElement.classList.remove('archive-loading','copy-pending');

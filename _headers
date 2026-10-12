@@ -1,5 +1,5 @@
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-itjJgJ5jvagO8DQRPNdLeVFpBJ53rBHMQwKlXtLAQJ8='; style-src 'self' 'sha256-Ullly9mhpiFWRs3ltInRP30Yyjr9XHyh8IAqmXGLnqU='; img-src 'self' data: https:; media-src 'self'; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-oa0/+gb1vkA1c8XEIEAwiMs4rgwOM9phPbzRW3INX+s='; style-src 'self' 'sha256-Ullly9mhpiFWRs3ltInRP30Yyjr9XHyh8IAqmXGLnqU='; img-src 'self' data: https:; media-src 'self'; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'
   X-Content-Type-Options: nosniff
   Referrer-Policy: no-referrer
   Permissions-Policy: camera=(), microphone=(), geolocation=()
@@ -16,4 +16,6 @@
 /assets/tapes/tape-4.59cd56d2707735b4.png
   Cache-Control: public, max-age=31536000, immutable
 /assets/tapes/tape-5.ca410c8d9d22b221.png
+  Cache-Control: public, max-age=31536000, immutable
+/assets/audio/bgm.58786e5633e5f85e.mp3
   Cache-Control: public, max-age=31536000, immutable
