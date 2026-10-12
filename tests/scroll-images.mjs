@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
-const images=Array.from({length:12},()=>({complete:false,loading:'lazy',events:{},addEventListener(event,callback){this.events[event]=callback;},removeEventListener(event){delete this.events[event];}}));
+const images=Array.from({length:12},(_,index)=>({src:'https://public.example/assets/photo-'+index+'.webp',complete:false,loading:'lazy',events:{},addEventListener(event,callback){this.events[event]=callback;},removeEventListener(event){delete this.events[event];}}));
 let observer,created=0;const timers=[];
-const context={document:{querySelectorAll:()=>images},setTimeout:callback=>{timers.push(callback);return timers.length;},clearTimeout(){},IntersectionObserver:class{constructor(callback,options){created++;this.callback=callback;this.observed=[];this.removed=[];assert.equal(options.rootMargin,'2000px 0px');observer=this;}observe(image){this.observed.push(image);}unobserve(image){this.removed.push(image);}disconnect(){this.disconnected=true;}}};
+const requests=[];
+const context={URL,AbortController,location:{href:'https://public.example/',origin:'https://public.example'},fetch:(url,options)=>{requests.push({url,options});return Promise.resolve(new Response('photo'));},document:{querySelectorAll:()=>images},setTimeout:callback=>{timers.push(callback);return timers.length;},clearTimeout(){},IntersectionObserver:class{constructor(callback,options){created++;this.callback=callback;this.observed=[];this.removed=[];assert.equal(options.rootMargin,'2000px 0px');observer=this;}observe(image){this.observed.push(image);}unobserve(image){this.removed.push(image);}disconnect(){this.disconnected=true;}}};
 runInNewContext(readFileSync(new URL('../shared/scroll-images.mjs',import.meta.url),'utf8').replace('export function ','function '),context);
 runInNewContext('prepareScrollImages()',context);assert.equal(created,0);
 images.slice(0,3).forEach(image=>image.events.load());assert.equal(created,0);images[3].events.error();assert.equal(created,1);assert.deepEqual(observer.observed,images.slice(4));
-observer.callback([{target:images[4],isIntersecting:true},{target:images[11],isIntersecting:false}]);assert.equal(images[4].loading,'eager');assert.equal(images[11].loading,'lazy');assert.deepEqual(observer.removed,[images[4]]);
+observer.callback([{target:images[4],isIntersecting:true},{target:images[11],isIntersecting:false}]);assert.equal(images[4].loading,'lazy','Ahead-of-scroll downloads must not delay document load');assert.equal(images[11].loading,'lazy');assert.deepEqual(observer.removed,[images[4]]);assert.equal(requests.length,1);assert.equal(requests[0].options.cache,'force-cache');
 const previous=observer;images.slice(0,4).forEach(image=>image.complete=true);runInNewContext('prepareScrollImages()',context);assert(previous.disconnected);assert.equal(created,2);timers[0]();assert.equal(created,2);
 console.log('PASS ahead-of-scroll loading waits for first photos, leaves distant photos lazy, and cleans up on rerender');
