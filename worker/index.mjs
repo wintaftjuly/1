@@ -18,6 +18,33 @@ function publicState(state,origin){
   ?state.archive.map((row,index)=>({...row,image:row.image.startsWith('data:image/')?origin+'/published-images/'+state.version+'/'+index:row.image})):state.archive;
  return{archive,settings:state.settings};
 }
+function imageResponse(image){
+ const data=typeof image==='string'?image.match(/^data:(image\/(?:png|jpeg|webp));base64,([A-Za-z0-9+/=]+)$/):null;
+ if(!data)return null;
+ const binary=atob(data[2]),bytes=new Uint8Array(binary.length);
+ for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+ return new Response(bytes,{headers:{'Content-Type':data[1],'Cache-Control':'public, max-age=604800, immutable','X-Content-Type-Options':'nosniff','X-Archive-Cache':'MISS'}});
+}
+async function readPublicMetadata(env,origin,ctx){
+ const cache=typeof caches!=='undefined'?caches.default:null;
+ const key=new Request(origin+'/__archive_metadata_v2');
+ const hit=cache?await cache.match(key).catch(()=>null):null;
+ if(hit)return hit.json();
+ const state=await readPublicState(env.ARCHIVE_STORE);
+ if(!state)return null;
+ const metadata=publicState(state,origin);
+ if(cache&&ctx?.waitUntil){
+  // Only this compact response is cached briefly; photo URLs remain immutable.
+  ctx.waitUntil(cache.put(key,new Response(JSON.stringify(metadata),{headers:{'Content-Type':'application/json','Cache-Control':'public, max-age=30'}})).catch(()=>{}));
+  const first=state.archive.map((row,index)=>({row,index})).sort((a,b)=>b.row.year-a.row.year).slice(0,4);
+  ctx.waitUntil(Promise.all(first.map(async({row,index})=>{
+   const url=metadata.archive[index].image;if(!url.startsWith(origin+'/published-images/'))return;
+   const request=new Request(url);if(await cache.match(request))return;
+   const response=imageResponse(row.image);if(response)await cache.put(request,response);
+  })).catch(()=>{}));
+ }
+ return metadata;
+}
 function decode(value) { return Uint8Array.from(atob(value.replaceAll('-','+').replaceAll('_','/')), c => c.charCodeAt(0)); }
 export async function authenticate(request, env) {
  const team = env.ACCESS_TEAM_DOMAIN, audience = env.ACCESS_AUD;
@@ -104,7 +131,7 @@ export default {
   if (['/archive.json','/settings.json','/public-state.json','/api/state'].includes(url.pathname)) {
    if (!['GET','HEAD'].includes(request.method)) return json({error:'Method not allowed'},405);
    try {
-    const state = admin?(env.ARCHIVE_STORE?await env.ARCHIVE_STORE.get(STATE_KEY,'json'):null):await readPublicState(env.ARCHIVE_STORE);
+    const state = admin?(env.ARCHIVE_STORE?await env.ARCHIVE_STORE.get(STATE_KEY,'json'):null):await readPublicMetadata(env,url.origin,ctx);
     if (url.pathname === '/api/state') return json({configured:!!env.ARCHIVE_STORE,state});
     if (state) {
      const archive=!admin?publicState(state,url.origin).archive:state.archive;
@@ -117,7 +144,7 @@ export default {
   if (url.pathname.startsWith('/api/')) return json({error:'Not found'},404);
   if(!admin&&['/','/index.html'].includes(url.pathname)&&request.method==='GET'&&env.ARCHIVE_STORE){
    try{
-    const state=await readPublicState(env.ARCHIVE_STORE);
+    const state=await readPublicMetadata(env,url.origin,ctx);
     if(state){
      const response=await env.ASSETS.fetch(request);
      if(response.ok&&response.headers.get('Content-Type')?.includes('text/html')){

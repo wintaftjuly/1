@@ -70,6 +70,15 @@ const warm=await worker.fetch(new Request('https://admin.example'+activeImagePat
 assert.equal(await warm.text(),'hello');assert.equal(warm.headers.get('X-Archive-Cache'),'HIT');assert.equal(reads,1,'Cached images must not read the large KV state again');
 await worker.fetch(new Request('https://admin.example/settings.json'),cachedEnv);assert.equal(reads,1,'Public requests must share the short-lived KV read');
 const cachedHead=await worker.fetch(new Request('https://admin.example'+activeImagePath,{method:'HEAD'}),cachedEnv);assert.equal(await cachedHead.text(),'');assert.equal(reads,1);
+const metadataWrites=[];
+await worker.fetch(new Request('https://admin.example/public-state.json'),cachedEnv,{waitUntil:promise=>metadataWrites.push(promise)});
+await Promise.all(metadataWrites);
+const metadataCache=edgeEntries.get('https://admin.example/__archive_metadata_v2');
+assert(metadataCache);assert.equal(metadataCache.headers.get('Cache-Control'),'public, max-age=30');assert(!(await metadataCache.clone().text()).includes('data:image/'));
+let unexpectedReads=0;
+const anotherIsolate={...cachedEnv,ARCHIVE_STORE:{get:async()=>{unexpectedReads++;throw Error('Large state must not be read on metadata cache hit');}}};
+const compactHit=await worker.fetch(new Request('https://admin.example/public-state.json'),anotherIsolate);
+assert.equal(compactHit.status,200);assert.equal((await compactHit.json()).archive[0].name,uploaded.archive[0].name);assert.equal(unexpectedReads,0);
 globalThis.caches=originalCaches;
 const originalRewriter=globalThis.HTMLRewriter;
 globalThis.HTMLRewriter=class{on(selector,handler){assert.equal(selector,'head');this.handler=handler;return this;}transform(response){this.handler.element({append:content=>{this.content=content;}});return new Response(this.content,{headers:response.headers});}};
