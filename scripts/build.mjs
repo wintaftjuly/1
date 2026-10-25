@@ -72,7 +72,6 @@ let publicTemplate = editorTemplate
  .replace(/(<(?:span|em) data-copy="(?:titleLead|titleAccent)">)[^<]*/g,'$1')
  .replace('assets/audio/bgm.mp3',assetUrl('assets/audio/bgm-stream.mp3'))
  .replace('class="copy-loading"', 'class="archive-loading copy-pending"')
- .replace('autoplay loop preload="metadata"','data-defer-boot="true" loop preload="none"')
  .replace('<div id="archive"></div>', '<p id="archive-loading" role="status">아카이브를 불러오는 중…</p><div id="archive"></div>')
  .replace(/<div class="header-actions">[\s\S]*?<\/div>/, '')
  .replace(/<button id="edit-selected"[\s\S]*?<\/button>/, '')

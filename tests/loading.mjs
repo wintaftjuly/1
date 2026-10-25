@@ -16,6 +16,7 @@ for(const directory of ['dist','dist-admin']){
  for(const file of assets){assert(existsSync(resolve(root,directory,file)),`Missing ${file}`);assert(headers.includes('/'+file+'\n  Cache-Control: public, max-age=31536000, immutable'));}
  assert(!html.includes('data:font/'),'Fonts must not block HTML download');
  if(directory==='dist'){assert(html.includes('class="archive-loading copy-pending"'));assert(!html.includes('class="copy-loading"'));assert(html.includes('role="status"'));}
+ assert(!html.match(/<audio\b[^>]*>/)[0].includes('autoplay'),'Music requires the play button in both pages');
  if(directory==='dist'){assert(Buffer.byteLength(html)<110000,'Public HTML must stay below 110 KB');const audio=html.match(/<audio\b[^>]*>/)[0];assert(audio.includes('preload="none"'));assert(!audio.includes('autoplay'));}
  if(directory==='dist'){for(const demo of ['얼굴의','서이현','윤서하'])assert(!html.includes(demo),'Public bundle must never contain demo content');assert.equal(readFileSync(resolve(root,directory,'archive.json'),'utf8'),'[]');assert(/bgm-stream\.[a-f0-9]{16}\.mp3/.test(html));assert(!html.includes("window.addEventListener('load'"),'Music must not wait for all images');}
 }
