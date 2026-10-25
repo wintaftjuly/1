@@ -22,7 +22,7 @@ for (const file of ['cursor-arrow.svg', 'cursor-cross.svg']) {
   const uri = `data:image/svg+xml;base64,${Buffer.from(read(`assets/${file}`)).toString('base64')}`;
   css = css.replaceAll(`assets/${file}`, uri);
 }
-const fontFile = 'assets/fonts/PretendardVariable.woff2';
+const fontFile = 'assets/fonts/OnulSamhwagothic-Regular.woff2';
 const spineFont = 'assets/fonts/Transcity-Regular.otf';
 // Versioned assets can be cached without inflating the first HTML response.
 const externalAssets = new Map();
@@ -32,6 +32,10 @@ function assetUrl(file) {
  externalAssets.set(file,target); return target;
 }
 css = css.replaceAll(fontFile, assetUrl(fontFile)).replaceAll(spineFont, assetUrl(spineFont));
+for (const font of ['PretendardVariable','ChillJinshuSongHeavy','OnulGoraesil-ExtraBold']) {
+ const file = `assets/fonts/${font}.woff2`;
+ css = css.replaceAll(file, assetUrl(file));
+}
 const cursorData = file => `data:image/svg+xml;base64,${Buffer.from(read(file)).toString('base64')}`;
 const cursors = {
   arrow: 'assets/cursors/left_ptr.svg',
@@ -97,12 +101,12 @@ function outputDirectory(name, bundle) {
  mkdirSync(resolve(output,'assets/fonts'),{recursive:true}); copyFileSync(resolve(root,'assets/fonts/Pretendard-OFL.txt'),resolve(output,'assets/fonts/Pretendard-OFL.txt'));
  for(const [source,target] of externalAssets){mkdirSync(resolve(output,target,'..'),{recursive:true});copyFileSync(resolve(root,source),resolve(output,target));}
  copyFileSync(resolve(root,'assets/fonts/Transcity-SOURCE.txt'),resolve(output,'assets/fonts/Transcity-SOURCE.txt'));
- for (const file of ['NotoSerifTC-OFL.txt','NotoSerifKR-OFL.txt','TitleFont-SOURCE.txt','Favicon-SOURCE.txt']) copyFileSync(resolve(root,'assets/fonts/'+file),resolve(output,'assets/fonts/'+file));
+ for (const file of ['NotoSerifTC-OFL.txt','NotoSerifKR-OFL.txt','TitleFont-SOURCE.txt','Favicon-SOURCE.txt','ArchiveFonts-SOURCE.txt']) copyFileSync(resolve(root,'assets/fonts/'+file),resolve(output,'assets/fonts/'+file));
  cpSync(resolve(root,'assets/audio'),resolve(output,'assets/audio'),{recursive:true});
  cpSync(resolve(root,'assets/cursors'),resolve(output,'assets/cursors'),{recursive:true});
  cpSync(resolve(root,'assets/published'),resolve(output,'assets/published'),{recursive:true});
 }
-const publicCss=css.replace(/@font-face\{font-family:'Pretendard'[^}]*\}/g,face=>`@media not all and (pointer:coarse){${face}}`);
+const publicCss=css.replace(/@font-face\{font-family:'OnulSamhwagothic-Regular'[^}]*\}/g,face=>`@media not all and (pointer:coarse){${face}}`);
 const publicBundle = compile(publicTemplate, reader,publicCss), editorBundle = compile(editorTemplate, app);
 writeFileSync(resolve(root,'index.html'),publicBundle.html);writeFileSync(resolve(root,'_headers'),publicBundle.headers);
 outputDirectory('dist',publicBundle);outputDirectory('dist-admin',editorBundle);

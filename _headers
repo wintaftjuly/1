@@ -1,13 +1,19 @@
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-qGL6eatrlUjsVt8iDq+a/G47lEz57dAUsIMUfaFoLdE='; style-src 'self' 'sha256-9KU++8jkdpAaQ7qe9pW0DrmfSOJXkysu6nzUMtC9uyw='; img-src 'self' data: https:; media-src 'self'; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-HEJ2bdHhQvUD/i+tDonVoIBPsbg63dniTRIDgv5W06A='; style-src 'self' 'sha256-QwJFlAzsfpe9C6u1dqqLWNW3EeH+Iwf9UtIRqYo9z0w='; img-src 'self' data: https:; media-src 'self'; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'
   X-Content-Type-Options: nosniff
   Referrer-Policy: no-referrer
   Permissions-Policy: camera=(), microphone=(), geolocation=()
 /assets/published/*
   Cache-Control: public, max-age=31536000, immutable
-/assets/fonts/PretendardVariable.9599f12fd42fc0bc.woff2
+/assets/fonts/OnulSamhwagothic-Regular.9d2ed57a74b69404.woff2
   Cache-Control: public, max-age=31536000, immutable
 /assets/fonts/Transcity-Regular.2d380619bbd1103f.otf
+  Cache-Control: public, max-age=31536000, immutable
+/assets/fonts/PretendardVariable.9599f12fd42fc0bc.woff2
+  Cache-Control: public, max-age=31536000, immutable
+/assets/fonts/ChillJinshuSongHeavy.df66b633b4517bff.woff2
+  Cache-Control: public, max-age=31536000, immutable
+/assets/fonts/OnulGoraesil-ExtraBold.5f1251bb16ec114a.woff2
   Cache-Control: public, max-age=31536000, immutable
 /assets/tapes/tape-1.56e6039d9a73d0e8.png
   Cache-Control: public, max-age=31536000, immutable

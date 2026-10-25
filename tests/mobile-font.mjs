@@ -5,7 +5,7 @@ const source=readFileSync(new URL('../shared/mobile-font.mjs',import.meta.url),'
 function setup(coarse,complete=false){
  const images=Array.from({length:2},()=>({complete,listeners:{},addEventListener(event,callback){this.listeners[event]=callback;}}));
  let loads=0,added=0;const timers=[];
- const context={PUBLIC_FONT_URL:'assets/font.woff2',matchMedia:()=>({matches:coarse}),document:{querySelectorAll:()=>images,fonts:{add:()=>added++}},FontFace:class{constructor(name,url){assert.equal(name,'Pretendard');assert(url.includes('assets/font.woff2'));}load(){loads++;return Promise.resolve(this);}},setTimeout:callback=>{timers.push(callback);return timers.length;},clearTimeout(){},requestIdleCallback:callback=>callback()};
+ const context={PUBLIC_FONT_URL:'assets/font.woff2',matchMedia:()=>({matches:coarse}),document:{querySelectorAll:()=>images,fonts:{add:()=>added++}},FontFace:class{constructor(name,url,options){assert.equal(name,'OnulSamhwagothic-Regular');assert.equal(options.weight,'400');assert(url.includes('assets/font.woff2'));}load(){loads++;return Promise.resolve(this);}},setTimeout:callback=>{timers.push(callback);return timers.length;},clearTimeout(){},requestIdleCallback:callback=>callback()};
  runInNewContext(source+';schedulePublicFont();schedulePublicFont();',context);
  return {images,timers,get loads(){return loads},get added(){return added}};
 }

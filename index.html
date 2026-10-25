@@ -18,7 +18,7 @@ body{background-color:var(--jade);background-image:none}header,.intro{color:var(
 header{justify-content:flex-end}.header-actions{margin-left:auto}.intro-bottom{justify-content:flex-end}.intro-bottom>span:last-child{margin-left:auto}
 
 /* Requested font, text-only removals and macOS cursor states. */
-*,*::before,*::after{font-family:'Pretendard',sans-serif!important}
+*,*::before,*::after{font-family:'OnulSamhwagothic-Regular','Pretendard',sans-serif!important;font-synthesis:none}
 .intro h1:after,.copy-editing .intro h1:after{content:none!important;display:none!important}
 .archive-spine>span:first-child{font-size:22px;font-weight:700}.archive-spine>span:last-child{font-size:22px;font-weight:700;letter-spacing:1px}
 footer{background:var(--jade)}footer [data-copy=footerHandle]{display:block!important;font-size:12px!important;letter-spacing:0}
@@ -28,7 +28,7 @@ footer{background:var(--jade)}footer [data-copy=footerHandle]{display:block!impo
 @media(pointer:coarse){#cursor.mac-cursor{display:none!important}}
 
 /* Graphic-poster edition. Gallery geometry and motion declarations are retained. */
-@media not all and (pointer:coarse){@font-face{font-family:'Pretendard';font-style:normal;font-weight:100 900;font-display:swap;src:url('assets/fonts/PretendardVariable.9599f12fd42fc0bc.woff2') format('woff2')}}
+@font-face{font-family:'Pretendard';font-style:normal;font-weight:100 900;font-display:swap;src:url('assets/fonts/PretendardVariable.9599f12fd42fc0bc.woff2') format('woff2')}
 :root{--jade:#fa443e;--oxide:#252527;--cream:#f5f3ed;--dark:#252527;--paper:#f5f3ed;--ink:#252527;--muted:#686469;--line:#25252744;--accent:#ecff64;--poster-red:#fa443e;--poster-pink:#f9e1ec;--poster-lime:#ecff64}
 body{background:var(--poster-red)}header{border-bottom:1px solid #25252766}header,.header-actions .text-button{color:var(--dark)}.archive-spine{background:var(--dark);color:var(--cream);border-right-color:var(--dark)}.archive-spine>span:first-child,.archive-spine>span:last-child{font-weight:800;letter-spacing:-.3px}
 .intro{padding-top:35px;padding-bottom:33px;grid-template-columns:1fr auto;gap:10px 30px}.intro h1{font-size:clamp(52px,5.7vw,91px);font-weight:900;letter-spacing:-.075em;line-height:1.05;text-shadow:none;color:var(--cream);margin:0}.intro h1 [data-copy=titleLead]{display:inline-block;font-weight:900;transform:rotate(-4deg) translateY(3px);position:relative;z-index:1}.intro h1 [data-copy=titleAccent]{display:inline-block;padding:.13em .28em .19em;margin-left:.07em;background:var(--poster-lime);color:var(--dark);border-radius:50%;font-weight:900;font-style:normal;transform:rotate(5deg);position:relative;z-index:0}.archive-subtitle{color:var(--cream);font-size:9px;font-weight:600;letter-spacing:.17em;margin-top:20px}.intro h1:before{content:none!important}.intro-bottom{align-self:center}.intro-bottom>span:last-child{color:var(--dark);font-size:9px;font-weight:600;border:0;border-block:1px solid var(--dark);padding:9px 0;letter-spacing:.03em}
@@ -79,7 +79,7 @@ footer{background:var(--fresh-green);color:var(--dark);border-color:var(--dark)}
 @media(max-width:700px){.archive-identity .archive-subtitle[data-copy=subtitle]{font-size:16.8px}.archive-spine>span.spine-line{font-size:18px}.spine-progress{left:3px}.card-alt-name{font-size:11px}}
 
 /* Original Pretendard title; per-character randomized card angles. */
-.intro h1 [data-copy=titleLead],.intro h1 [data-copy=titleAccent]{font-family:'Pretendard',sans-serif!important;font-weight:900}
+.intro h1 [data-copy=titleLead],.intro h1 [data-copy=titleAccent]{font-family:'ChillJinshuSongHeavy',serif!important;font-weight:900}
 .card{transform:rotate(var(--card-angle,0deg))}
 .spine-arrow{display:inline-block;vertical-align:middle;width:1.5em;height:.55em;margin-left:.35em;overflow:visible}.spine-progress{width:3px;background:#A9ED3D44;border-radius:2px}.spine-progress:after{border-radius:2px}
 @media(max-width:700px){.spine-progress{width:2px}}
@@ -102,12 +102,21 @@ html:not(.archive-loading) #archive-loading{display:none}
 @media(max-width:700px){.manage-row{gap:7px}.manage-row>span{font-size:11px}.manage-row img{width:30px;height:40px}.order-buttons{flex-direction:column}.order-step{padding:3px 7px}}
 
 .showcase-panel{position:fixed;z-index:110;right:24px;bottom:24px;width:min(380px,calc(100vw - 48px));padding:22px;background:var(--dark);color:var(--poster-lime);border:1px solid var(--poster-lime);box-shadow:0 8px 30px #08191044}.showcase-panel strong{font-size:17px}.showcase-panel p{font-size:12px;line-height:1.7}.showcase-panel button,.showcase-panel .button{display:inline-block;background:var(--poster-lime);color:var(--dark);font-size:12px}.showcase-panel[hidden],.showcase-panel a[hidden]{display:none}.showcase-recording,.showcase-recording body{scroll-behavior:auto;scroll-snap-type:none}.showcase-recording #cursor{display:none!important}.showcase-recording .card:focus-visible{outline:none}.card.showcase-hover{transform:translateY(-5px) rotate(0);box-shadow:4px 9px 15px #41462d26}.card.showcase-hover .portrait img{transform:scale(1.045);filter:saturate(1)}.card.showcase-hover .portrait:after{opacity:1;transform:none}
+
+/* Requested archive typography; preserve the Transcity rail and existing motion. */
+@font-face{font-family:'ChillJinshuSongHeavy';font-style:normal;font-weight:900;font-display:swap;src:url('assets/fonts/ChillJinshuSongHeavy.df66b633b4517bff.woff2') format('woff2')}
+@font-face{font-family:'OnulGoraesil-ExtraBold';font-style:normal;font-weight:800;font-display:swap;src:url('assets/fonts/OnulGoraesil-ExtraBold.5f1251bb16ec114a.woff2') format('woff2')}
+@media not all and (pointer:coarse){@font-face{font-family:'OnulSamhwagothic-Regular';font-style:normal;font-weight:400;font-display:swap;src:url('assets/fonts/OnulSamhwagothic-Regular.9d2ed57a74b69404.woff2') format('woff2')}}
+.card-name,#detail-name,#detail-alt-name{font-family:'OnulGoraesil-ExtraBold','Pretendard',sans-serif!important;font-weight:800}
+footer{gap:16px}
+footer .footer-credit{display:block!important;font-family:'OnulSamhwagothic-Regular','Pretendard',sans-serif!important;font-size:12px!important;font-weight:400;font-style:normal;line-height:1.5;letter-spacing:0;text-transform:none}
+@media(max-width:700px){footer .footer-credit{font-size:11px!important}}
 </style></head>
 <body><aside class="archive-spine"><span class="spine-line"><span data-copy="spine">Character archive</span><svg class="spine-arrow" viewBox="0 0 80 24" aria-hidden="true" focusable="false"><path d="M2 12H12l7-6 10 12 10-12 10 12 8-6H76M66 3l10 9-10 9" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="spine-progress" aria-hidden="true"></span></aside><header></header>
-<main id="top"><section class="intro"><h1><span data-copy="titleLead"></span> <em data-copy="titleAccent"></em><span class="archive-identity archive-subtitle"><span class="archive-subtitle" data-copy="subtitle">ONE NAN</span><a class="archive-social archive-subtitle" href="https://x.com/ErerWintaft" target="_blank" rel="noopener noreferrer" aria-label="ererwintaft의 X 새 창으로 열기">@ererwintaft</a></span><a class="archive-subtitle archive-postype" href="https://www.postype.com/@ererwintaft" target="_blank" rel="noopener noreferrer" aria-label="ererwintaft의 Postype 새 창으로 열기">POSTYPE · @ererwintaft ↗</a></h1><div class="intro-bottom"><div class="bgm-player" role="group" aria-label="배경 음악"><button id="bgm-stop" type="button" aria-label="완전 멈춤" title="완전 멈춤"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="2" width="8" height="8"/></svg></button><button id="bgm-pause" type="button" aria-label="일시 정지" title="일시 정지"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 2h3v8H2zM7 2h3v8H7z"/></svg></button><button id="bgm-play" type="button" aria-label="재생" title="재생"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1l8 5-8 5z"/></svg></button><span id="bgm-time" aria-label="음악 재생 시간">00:00 / --:--</span></div><audio id="bgm" src="assets/audio/bgm-stream.ed86b81c9ed23dee.mp3" data-defer-boot="true" loop preload="none"></audio><span id="total"></span></div></section><nav id="years" aria-label="활동 연도"></nav><p id="archive-loading" role="status">아카이브를 불러오는 중…</p><div id="archive"></div><footer><span data-copy="footerHandle">@ererwintaft</span></footer></main>
+<main id="top"><section class="intro"><h1><span data-copy="titleLead"></span> <em data-copy="titleAccent"></em><span class="archive-identity archive-subtitle"><span class="archive-subtitle" data-copy="subtitle">ONE NAN</span><a class="archive-social archive-subtitle" href="https://x.com/ErerWintaft" target="_blank" rel="noopener noreferrer" aria-label="ererwintaft의 X 새 창으로 열기">@ererwintaft</a></span><a class="archive-subtitle archive-postype" href="https://www.postype.com/@ererwintaft" target="_blank" rel="noopener noreferrer" aria-label="ererwintaft의 Postype 새 창으로 열기">POSTYPE · @ererwintaft ↗</a></h1><div class="intro-bottom"><div class="bgm-player" role="group" aria-label="배경 음악"><button id="bgm-stop" type="button" aria-label="완전 멈춤" title="완전 멈춤"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="2" width="8" height="8"/></svg></button><button id="bgm-pause" type="button" aria-label="일시 정지" title="일시 정지"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 2h3v8H2zM7 2h3v8H7z"/></svg></button><button id="bgm-play" type="button" aria-label="재생" title="재생"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1l8 5-8 5z"/></svg></button><span id="bgm-time" aria-label="음악 재생 시간">00:00 / --:--</span></div><audio id="bgm" src="assets/audio/bgm-stream.ed86b81c9ed23dee.mp3" data-defer-boot="true" loop preload="none"></audio><span id="total"></span></div></section><nav id="years" aria-label="활동 연도"></nav><p id="archive-loading" role="status">아카이브를 불러오는 중…</p><div id="archive"></div><footer><span class="footer-credit">made by @ererwintaft</span><span class="footer-credit">font by @오늘폰트</span></footer></main>
 <dialog id="detail"><button class="close" data-close aria-label="닫기">×</button><img id="detail-image" alt=""><div class="detail-copy"><span id="detail-year" class="eyebrow"></span><h2 id="detail-name"></h2><p id="detail-alt-name" hidden></p><p id="detail-community"></p><p id="detail-note"></p></div></dialog>
 
-<div id="cursor" class="mac-cursor" aria-hidden="true"><img alt="" draggable="false"></div><svg class="tape-filter-defs" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><defs><filter id="tape-sharpen" color-interpolation-filters="sRGB"><feConvolveMatrix order="3" kernelMatrix="0 -.15 0 -.15 1.6 -.15 0 -.15 0" divisor="1" bias="0" preserveAlpha="true" edgeMode="duplicate"/></filter></defs></svg><script>const PUBLIC_FONT_URL="assets/fonts/PretendardVariable.9599f12fd42fc0bc.woff2";
+<div id="cursor" class="mac-cursor" aria-hidden="true"><img alt="" draggable="false"></div><svg class="tape-filter-defs" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><defs><filter id="tape-sharpen" color-interpolation-filters="sRGB"><feConvolveMatrix order="3" kernelMatrix="0 -.15 0 -.15 1.6 -.15 0 -.15 0" divisor="1" bias="0" preserveAlpha="true" edgeMode="duplicate"/></filter></defs></svg><script>const PUBLIC_FONT_URL="assets/fonts/OnulSamhwagothic-Regular.9d2ed57a74b69404.woff2";
 // Let the first visible portraits use the connection before the large font.
 function schedulePublicFont(){
  if(publicFontScheduled||!matchMedia('(pointer:coarse)').matches||typeof FontFace==='undefined')return;
@@ -116,7 +125,7 @@ function schedulePublicFont(){
  let pending=images.filter(image=>!image.complete).length,started=false;
  const start=()=>{
   if(started)return;started=true;clearTimeout(deadline);
-  const load=()=>{const font=new FontFace('Pretendard',`url("${PUBLIC_FONT_URL}")`,{style:'normal',weight:'100 900',display:'swap'});font.load().then(loaded=>document.fonts.add(loaded)).catch(()=>{});};
+  const load=()=>{const font=new FontFace('OnulSamhwagothic-Regular',`url("${PUBLIC_FONT_URL}")`,{style:'normal',weight:'400',display:'swap'});font.load().then(loaded=>document.fonts.add(loaded)).catch(()=>{});};
   if(typeof requestIdleCallback==='function')requestIdleCallback(load,{timeout:2000});else setTimeout(load,0);
  };
  const settled=()=>{pending--;if(pending<=0)start();};
@@ -211,7 +220,7 @@ function validateRecords(data) {
   if (!row || typeof row.name !== 'string' || !row.name.trim() || row.name.length > 80 || typeof row.community !== 'string' || !row.community.trim() || row.community.length > 120 || !Number.isInteger(row.year) || row.year < 1900 || row.year > 2100 || !validImage(row.image) || row.image.length > 2500000 || typeof row.note !== 'string' || row.note.length > 2000 || (row.altName !== undefined && (typeof row.altName !== 'string' || row.altName.length > 120))) throw Error('Invalid character');
   const id = typeof row.id === 'string' && row.id.length < 100 ? row.id : 'character-' + index;
   if (ids.has(id)) throw Error('Duplicate character'); ids.add(id);
-  return {id, name: row.name, community: row.community, year: row.year, image: row.image, detailImage:validImage(row.detailImage)?row.detailImage:row.image, note: row.note, altName: (row.altName || '').trim()};
+  return {id, name: row.name, community: row.community, year: row.year, image: row.image, thumbnailImage:validImage(row.thumbnailImage)?row.thumbnailImage:'', detailImage:validImage(row.detailImage)?row.detailImage:row.image, note: row.note, altName: (row.altName || '').trim()};
  });
 }
 function validateCopy(data) {
@@ -251,7 +260,8 @@ function render() {
   group.forEach((row,index) => {
    const card = el('button','card'); applyCardAngle(card,row.id);applyCardTape(card,row.id); card.setAttribute('aria-label',row.name+' · '+row.community+' · '+year+'년 상세 보기');
    const portrait = el('div','portrait'); portrait.dataset.viewStory = siteCopy.viewStory;
-   const image = el('img');image.loading=photoIndex<4?'eager':'lazy';image.fetchPriority=photoIndex<4?'high':'auto';image.decoding='async';photoIndex++;image.src = BUNDLED_PORTRAITS[row.image] || row.image; image.alt = row.name+'의 초상'; portrait.append(image);
+   const image = el('img');image.loading=photoIndex<4?'eager':'lazy';image.fetchPriority=photoIndex<4?'high':'auto';image.decoding='async';photoIndex++;image.src = BUNDLED_PORTRAITS[row.image] || row.image; image.alt = row.name+'의 초상';
+   if(row.thumbnailImage){const picture=el('picture'),source=el('source');source.media='(max-width: 600px)';source.srcset=row.thumbnailImage;picture.append(source,image);portrait.append(picture);}else portrait.append(image);
    const meta = el('div','card-meta'); meta.append(el('span','card-name',row.name),el('span','card-num',String(index+1).padStart(2,'0')));
    card.append(portrait,meta); card.append(el('div','card-community',row.community)); card.onclick = () => showDetail(row.id); grid.append(card);
   });

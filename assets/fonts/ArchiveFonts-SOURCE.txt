@@ -1,0 +1,18 @@
+Web fonts converted from the user-specified OTF files. Original outlines preserved.
+
+Onul fonts: user-provided files; copyright remains with Onulfont. No license is inferred.
+
+Chill title font is subset to the published title and punctuation.
+
+ChillJinshuSongHeavy.otf source SHA-256: ef82c300b96641b676681646f46762a46db914b0108d0b49cabd487198fdc1dd
+
+© 2023 ChillType, with Reserved Font Name 'Jinshu'.
+© 2017-2022 Adobe (http://www.adobe.com/), with Reserved Font Name 'Source'.
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1. This Font Software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the SIL Open Font License for the specific language, permissions and limitations governing your use of this Font Software.
+
+http://scripts.sil.org/OFL
+
+OnulGoraesil-ExtraBold.otf source SHA-256: bf330f525426b5dc40dc1deba322a11d150ccbfd9744bda372b3bf1a19872af1
+
+OnulSamhwagothic-Regular.otf source SHA-256: 7a0624f77917f820d239a46975a61c41d7da968921fad911dfc107045567b81c
